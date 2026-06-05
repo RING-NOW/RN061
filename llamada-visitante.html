@@ -4,11 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Portero Digital — Llamando</title>
+<script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  :root { --oro: #C9A84C; --fondo: #1a1a1a; --texto: #f0ede8; --suave: #888; }
+  :root { --oro: #C9A84C; --fondo: #111; --texto: #f0ede8; --suave: #888; }
+
   body {
     background: var(--fondo);
     color: var(--texto);
@@ -18,64 +20,60 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0;
     overflow: hidden;
   }
 
   #video-yo {
-    position: relative;
-    width: 120px;
-    height: 120px;
+    width: 110px; height: 110px;
     object-fit: cover;
-    z-index: 5;
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.15);
     transform: scaleX(-1);
     flex-shrink: 0;
   }
 
-  /* Overlay encima del video */
   .overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    padding: 60px 24px 72px;
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: space-between;
+    padding: 56px 24px 68px;
     background: var(--fondo);
   }
 
+  /* Marca */
+  .ringnow-top {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    color: rgba(255,255,255,0.15);
+    text-transform: uppercase;
+    align-self: center;
+  }
+
   .llamando-sub {
-    font-size: 13px;
+    font-size: 12px;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: #aaa;
+    color: #888;
   }
   .llamando-depto {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 80px;
     color: var(--oro);
     line-height: 1;
-    position: relative;
-    z-index: 2;
   }
-  .llamando-label {
-    font-size: 13px;
-    color: #aaa;
+  .llamando-edificio {
+    font-size: 12px;
+    color: #666;
     letter-spacing: 2px;
     text-transform: uppercase;
+    text-align: center;
   }
 
-  /* Pulso animado */
   .pulso-ring {
     position: relative;
-    width: 100px;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100px; height: 100px;
+    display: flex; align-items: center; justify-content: center;
   }
   .pulso-ring::before, .pulso-ring::after {
     content: '';
@@ -86,46 +84,45 @@
   }
   .pulso-ring::after { animation-delay: 0.6s; }
   @keyframes pulso {
-    0% { width: 100px; height: 100px; opacity: 0.8; }
-    100% { width: 160px; height: 160px; opacity: 0; }
+    0%   { width: 100px; height: 100px; opacity: 0.8; }
+    100% { width: 170px; height: 170px; opacity: 0; }
   }
 
   .estado {
-    font-size: 14px;
-    color: #aaa;
-    text-align: center;
-    min-height: 20px;
+    font-size: 13px; color: #888;
+    text-align: center; min-height: 20px;
+    letter-spacing: 1px;
   }
   .estado.error { color: #e74c3c; }
 
   .btn-colgar {
     width: 72px; height: 72px;
-    border-radius: 50%;
-    border: none;
-    background: #e74c3c;
-    font-size: 30px;
-    cursor: pointer;
-    box-shadow: 0 0 0 8px rgba(231,76,60,.2);
+    border-radius: 50%; border: none;
+    background: #c0392b;
+    font-size: 28px; cursor: pointer;
+    box-shadow: 0 0 0 8px rgba(192,57,43,.2);
     display: flex; align-items: center; justify-content: center;
+    transition: transform .15s;
   }
+  .btn-colgar:active { transform: scale(.9); }
 
-  /* Pantalla gracias */
   #pantalla-gracias {
     display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 10;
+    position: fixed; inset: 0; z-index: 10;
     background: var(--fondo);
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    text-align: center;
-    padding: 40px;
+    align-items: center; justify-content: center;
+    gap: 14px; text-align: center; padding: 40px;
   }
-  #pantalla-gracias .gr-icon { font-size: 56px; }
-  #pantalla-gracias .gr-txt { font-size: 20px; font-weight: 700; }
-  #pantalla-gracias .gr-sub { font-size: 14px; color: var(--suave); }
+  #pantalla-gracias .gr-icon { font-size: 52px; }
+  #pantalla-gracias .gr-txt  { font-size: 20px; font-weight: 700; }
+  #pantalla-gracias .gr-sub  { font-size: 14px; color: var(--suave); }
+  #pantalla-gracias .rn-badge {
+    margin-top: 24px;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 5px; color: rgba(255,255,255,0.15);
+    text-transform: uppercase;
+  }
 
   #toast {
     position: fixed; bottom: 100px; left: 50%;
@@ -143,19 +140,18 @@
 <audio id="audio-remoto" autoplay playsinline></audio>
 
 <div class="overlay">
-  <!-- Cámara propia arriba centrada -->
-  <video id="video-yo" autoplay muted playsinline width="120" height="120"></video>
+  <div class="ringnow-top">RingNow</div>
 
-  <!-- Número de depto con anillos -->
+  <video id="video-yo" autoplay muted playsinline></video>
+
   <div style="display:flex;flex-direction:column;align-items:center;gap:12px;flex:1;justify-content:center;">
     <div class="llamando-sub" id="llamando-sub">Llamando al depto</div>
     <div class="pulso-ring">
       <div class="llamando-depto" id="depto-num">—</div>
     </div>
-    <div class="llamando-label">Blanco Encalada 3225</div>
+    <div class="llamando-edificio" id="txt-edificio">—</div>
   </div>
 
-  <!-- Abajo: estado y botón colgar -->
   <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
     <div class="estado" id="estado">Activando cámara...</div>
     <button class="btn-colgar" onclick="colgar()">📵</button>
@@ -166,24 +162,20 @@
   <div class="gr-icon">👋</div>
   <div class="gr-txt">¡Hasta luego!</div>
   <div class="gr-sub">Podés cerrar esta ventana</div>
+  <div class="rn-badge">RINGNOW</div>
 </div>
 
 <div id="toast"></div>
 
-<!-- Firebase -->
+<script>
+// Aplicar config
+document.getElementById('txt-edificio').textContent = RINGNOW_CONFIG.edificio.nombre;
+</script>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyBkd10JiZTM2kdj6tJgssINZTzGhZq2D0Q",
-  authDomain: "blancoencalada3225.firebaseapp.com",
-  databaseURL: "https://blancoencalada3225-default-rtdb.firebaseio.com",
-  projectId: "blancoencalada3225",
-  storageBucket: "blancoencalada3225.firebasestorage.app",
-  messagingSenderId: "777847551727",
-  appId: "1:777847551727:web:4c291e51ee77b272b18d1a"
-};
 
+<script>
 const ICE = { iceServers: [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' }
@@ -191,17 +183,15 @@ const ICE = { iceServers: [
 
 let db, pc, localStream, callRef, llamadaConectada = false, wakeLock = null;
 
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(RINGNOW_CONFIG.firebase);
 db = firebase.database();
 
-// Leer depto de URL
 const params = new URLSearchParams(window.location.search);
 const depto = parseInt(params.get('depto'));
 
 if (!depto || isNaN(depto)) {
   window.location.href = 'timbre-visitante.html';
 } else {
-  // Reemplazar en el historial para que volver/reabrir no relance la llamada
   history.replaceState(null, '', 'timbre-visitante.html');
   document.getElementById('depto-num').textContent = depto;
   iniciarLlamada(depto);
@@ -209,13 +199,14 @@ if (!depto || isNaN(depto)) {
 
 async function iniciarLlamada(n) {
   const callId = 'call_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+  const baseURL = RINGNOW_CONFIG.baseURL;
+  const edificio = RINGNOW_CONFIG.edificio.nombre;
 
-  // Wake lock
   if ('wakeLock' in navigator) {
     navigator.wakeLock.request('screen').then(function(wl) { wakeLock = wl; }).catch(function(){});
   }
 
-  // Leer canal privado ntfy del residente desde Firebase y enviar notificación
+  // Notificación ntfy al residente
   db.ref('canales/depto' + n).once('value').then(function(snap) {
     const canal = snap.val() && snap.val().canal;
     if (canal) {
@@ -225,15 +216,14 @@ async function iniciarLlamada(n) {
           'Title': 'Llamada Depto ' + n,
           'Priority': 'urgent',
           'Tags': 'bell',
-          'Click': 'https://wwccrrss.github.io/blancoencalada3225/timbre-residente.html?depto=' + n + '&callId=' + callId
+          'Click': baseURL + '/timbre-residente.html?depto=' + n + '&callId=' + callId
         },
-        body: 'Alguien tocó el timbre en Blanco Encalada 3225'
+        body: 'Alguien tocó el timbre en ' + edificio
       }).catch(function(){});
     }
   }).catch(function(){});
 
   try {
-    // 1. Registrar llamada en Firebase
     callRef = db.ref('calls/' + callId);
     await callRef.set({
       deptoId: n, status: 'ringing',
@@ -241,19 +231,15 @@ async function iniciarLlamada(n) {
     });
     setEstado('Llamando...');
 
-    // 2. Pedir cámara y micrófono
     try {
       localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       document.getElementById('video-yo').srcObject = localStream;
-    } catch(camErr) {
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
-      } catch(audioErr) {
-        localStream = null;
-      }
+    } catch(e) {
+      try { localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true }); }
+      catch(e2) { localStream = null; }
     }
 
-    // 3. Capturar foto cada 2s y subirla a Firebase para preview del residente
+    // Preview periódico
     if (localStream && localStream.getVideoTracks().length > 0) {
       const canvas = document.createElement('canvas');
       const videoEl = document.getElementById('video-yo');
@@ -264,15 +250,12 @@ async function iniciarLlamada(n) {
           canvas.width = videoEl.videoWidth || 320;
           canvas.height = videoEl.videoHeight || 240;
           ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
-          const foto = canvas.toDataURL('image/jpeg', 0.5);
-          callRef.update({ preview: foto });
+          callRef.update({ preview: canvas.toDataURL('image/jpeg', 0.5) });
         } catch(e) {}
       }, 2000);
-      // Guardar para limpiar al colgar
       window._fotoInterval = fotoInterval;
     }
 
-    // 4. PeerConnection
     pc = new RTCPeerConnection(ICE);
     if (localStream) localStream.getTracks().forEach(function(t) { pc.addTrack(t, localStream); });
 
@@ -283,7 +266,6 @@ async function iniciarLlamada(n) {
         a.play().catch(function(){});
       }
     };
-
     pc.onicecandidate = function(e) {
       if (e.candidate) callRef.child('visitorCandidates').push(e.candidate.toJSON());
     };
@@ -297,8 +279,7 @@ async function iniciarLlamada(n) {
       if (snap.val() && pc && !pc.currentRemoteDescription) {
         try {
           await pc.setRemoteDescription(new RTCSessionDescription(snap.val()));
-          setEstado('');
-          llamadaConectada = true;
+          setEstado(''); llamadaConectada = true;
           document.getElementById('llamando-sub').textContent = 'Conectado al depto';
         } catch(e) {}
       }
@@ -315,7 +296,6 @@ async function iniciarLlamada(n) {
       }
     });
 
-    // Timeout 90s
     setTimeout(function() {
       if (!llamadaConectada) { colgar(true); toast('Sin respuesta'); }
     }, 90000);
@@ -328,14 +308,12 @@ async function iniciarLlamada(n) {
 
 function colgar(notif) {
   llamadaConectada = false;
-  // Cleanup sin await para no bloquear la redirección
   try { if (wakeLock) wakeLock.release(); } catch(e) {}
   try { if (window._fotoInterval) { clearInterval(window._fotoInterval); window._fotoInterval = null; } } catch(e) {}
   try { if (callRef) { callRef.update({ status: 'ended' }); callRef.off(); callRef = null; } } catch(e) {}
   try { if (pc) { pc.close(); pc = null; } } catch(e) {}
   try { if (localStream) { localStream.getTracks().forEach(function(t) { t.stop(); }); localStream = null; } } catch(e) {}
-  // Redirigir inmediatamente
-  window.location.replace('https://wwccrrss.github.io/blancoencalada3225/fin-visitante.html');
+  window.location.replace(RINGNOW_CONFIG.baseURL + '/fin-visitante.html');
 }
 
 function setEstado(txt, cls) {
