@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="manifest" href="/blancoencalada3225/manifest.json">
+<script src="config.js"></script>
 <script>if (new URLSearchParams(window.location.search).has('callId')) { document.documentElement.style.setProperty('--hide-standby', 'none'); }</script>
 <meta name="theme-color" content="#C9A84C">
 <meta name="mobile-web-app-capable" content="yes">
@@ -43,19 +43,11 @@
   .d-wai { color: #d29922; }
 
   /* STANDBY */
-  :root { --hide-standby: flex; }
   #pantalla-standby {
     display: none; flex-direction: column;
     align-items: center; gap: 20px;
     width: 100%; max-width: 380px; text-align: center;
   }
-  .standby-label { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 4px; color: var(--suave); text-transform: uppercase; }
-  .standby-depto { font-family: 'Bebas Neue', sans-serif; font-size: 100px; color: var(--oro); line-height: 1; }
-  .standby-status { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--verde); }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--verde); animation: blink 2s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-  .standby-info { font-size: 13px; color: #555; line-height: 1.6; max-width: 280px; }
-  .btn-link { background: none; border: none; color: #444; font-size: 12px; cursor: pointer; text-decoration: underline; margin-top: 8px; }
 
   /* CONFIG DEPTO (primera vez) */
   #pantalla-config {
@@ -95,24 +87,9 @@
     from { opacity: 0; transform: scale(1.04); }
     to   { opacity: 1; transform: scale(1); }
   }
-  .pulse-ring {
-    position: absolute;
-    width: 110px; height: 110px;
-    border-radius: 50%;
-    border: 2px solid rgba(138,180,212,.35);
-    animation: pulsoAnillo 2.5s var(--delay, 0s) ease-out infinite;
-  }
-  @keyframes pulsoAnillo {
-    0%   { transform: scale(1);   opacity: .7; }
-    100% { transform: scale(2.2); opacity: 0; }
-  }
   @keyframes pulsarVerde {
     0%, 100% { box-shadow: 0 0 0 8px rgba(39,174,96,.2); }
     50%       { box-shadow: 0 0 0 16px rgba(39,174,96,.1); }
-  }
-  @keyframes fadeSlideDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to   { opacity: 1; transform: translateY(0); }
   }
   @keyframes fadeSlideUp {
     from { opacity: 0; transform: translateY(20px); }
@@ -129,7 +106,7 @@
     align-items: center; justify-content: center; padding-top: 24px; gap: 6px;
   }
   .ot-label { font-size: 11px; letter-spacing: 3px; color: rgba(255,255,255,.5); text-transform: uppercase; }
-  .ot-depto { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: #fff; letter-spacing: 1px; }
+  .ot-edificio { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: #fff; letter-spacing: 1px; }
 
   .overlay-bottom {
     position: absolute; bottom: 0; left: 0; right: 0; height: 180px;
@@ -163,6 +140,14 @@
     letter-spacing: 1px; z-index: 10;
   }
 
+  /* MARCA RINGNOW */
+  .ringnow-badge {
+    font-size: 10px; font-weight: 700; letter-spacing: 4px;
+    color: rgba(255,255,255,0.12); text-transform: uppercase;
+    position: absolute; bottom: 16px; left: 0; right: 0;
+    text-align: center; z-index: 10;
+  }
+
   #toast {
     position: fixed; bottom: 30px; left: 50%;
     transform: translateX(-50%) translateY(20px);
@@ -184,29 +169,33 @@
   <div class="dl d-wai" id="d4">⏳ Detectando departamento...</div>
 </div>
 
-<!-- CONFIG (primera vez, sin ?depto en URL y sin localStorage) -->
+<!-- CONFIG (primera vez) -->
 <div id="pantalla-config">
   <div class="config-titulo">Configurar Depto</div>
   <div class="config-desc">Ingresá el número de tu departamento para recibir llamadas del portero digital.</div>
-  <input type="number" class="input-depto" id="input-depto" placeholder="5" min="1" max="99">
+  <input type="number" class="input-depto" id="input-depto" placeholder="5" min="1" max="999">
   <button class="btn-activar" onclick="configurarDepto()">Activar Portero</button>
 </div>
 
-<!-- STANDBY / LLAMADA ENTRANTE UNIFICADOS -->
+<!-- STANDBY -->
 <div id="pantalla-standby" style="display:none;">
-  <!-- Estado: esperando (sin callId) -->
   <div id="standby-espera" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;padding:40px;text-align:center;">
     <div style="font-size:48px;">🔔</div>
     <div style="font-size:22px;font-weight:700;color:var(--texto);">Portero Digital</div>
     <div style="font-size:15px;color:var(--suave);">Depto <span id="standby-num">—</span></div>
-    <div style="font-size:13px;color:var(--verde);display:flex;align-items:center;gap:6px;"><div class="dot"></div> Timbre activo</div>
+    <div style="font-size:13px;color:var(--verde);display:flex;align-items:center;gap:6px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--verde);animation:blink 2s infinite;"></div>
+      Timbre activo
+    </div>
+    <style>@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }</style>
     <div style="margin-top:20px;padding:16px;background:rgba(255,255,255,0.05);border-radius:12px;width:100%;">
       <div style="font-size:12px;color:var(--suave);margin-bottom:8px;">Para recibir llamadas instalá <strong>ntfy</strong> y suscribite al canal:</div>
       <div id="standby-canal" style="font-size:13px;font-weight:700;color:var(--oro);letter-spacing:1px;word-break:break-all;">—</div>
       <div style="font-size:11px;color:var(--suave);margin-top:6px;">Hacé esto una sola vez. Todos en el depto pueden suscribirse al mismo canal.</div>
     </div>
     <button onclick="window.close()" style="margin-top:8px;padding:12px 28px;background:#C9A84C;color:#111;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">Cerrar</button>
-    <button class="btn-link" onclick="cambiarDepto()" style="margin-top:4px;">Cambiar departamento</button>
+    <button onclick="cambiarDepto()" style="margin-top:4px;background:none;border:none;color:#444;font-size:12px;cursor:pointer;text-decoration:underline;">Cambiar departamento</button>
+    <div style="margin-top:16px;font-size:10px;font-weight:700;letter-spacing:4px;color:rgba(255,255,255,0.1);text-transform:uppercase;">RINGNOW</div>
   </div>
 </div>
 
@@ -217,14 +206,7 @@
   <img id="preview-visitante" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:6;opacity:1;" />
   <audio id="audio-visitante" autoplay playsinline></audio>
 
-  <!-- Pantalla de llamada entrante (antes de atender) -->
   <div id="incoming-screen" style="position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 24px 72px;box-sizing:border-box;background:linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 45%);">
-    
-    
-
-    
-
-    <!-- Parte inferior: botones -->
     <div style="display:flex;flex-direction:column;align-items:center;gap:20px;width:100%;animation:fadeSlideUp .5s .1s ease both;">
       <div id="llamada-estado" style="font-size:14px;color:#8ab4d4;letter-spacing:1px;min-height:20px;"></div>
       <div id="btns-entrante" style="display:flex;gap:56px;align-items:center;">
@@ -242,22 +224,25 @@
 
   <div class="overlay-top" style="display:none;">
     <div class="ot-label">Llamada desde la puerta</div>
-    <div class="ot-depto">Blanco Encalada 3225</div>
+    <div class="ot-edificio" id="ot-edificio">—</div>
   </div>
 
   <div class="overlay-bottom">
-    <div id="btns-entrante-old" style="display:none;gap:44px">
-    </div>
     <button class="btn-acc btn-rojo" id="btn-colgar" style="display:none" onclick="colgar()">📵</button>
   </div>
+
+  <div class="ringnow-badge">RINGNOW</div>
 </div>
 
 <div id="toast"></div>
 
-
-<!-- Firebase — múltiples CDN como fallback -->
 <script>
-// El loader se ejecuta cuando el DOM está listo, así las funciones ya están definidas
+// Aplicar config
+document.getElementById('ot-edificio').textContent = RINGNOW_CONFIG.edificio.nombre;
+</script>
+
+<!-- Firebase con fallback CDN -->
+<script>
 window.addEventListener('load', function() {
   function tryLoad(urls, idx, onSuccess, onFail) {
     if (idx >= urls.length) { onFail(); return; }
@@ -284,20 +269,6 @@ window.addEventListener('load', function() {
 </script>
 
 <script>
-/* =========================================================
-   CONFIGURACIÓN — ya completada con tus datos reales
-   ========================================================= */
-const firebaseConfig = {
-  apiKey: "AIzaSyBkd10JiZTM2kdj6tJgssINZTzGhZq2D0Q",
-  authDomain: "blancoencalada3225.firebaseapp.com",
-  databaseURL: "https://blancoencalada3225-default-rtdb.firebaseio.com",
-  projectId: "blancoencalada3225",
-  storageBucket: "blancoencalada3225.firebasestorage.app",
-  messagingSenderId: "777847551727",
-  appId: "1:777847551727:web:4c291e51ee77b272b18d1a"
-};
-/* ========================================================= */
-
 const ICE = { iceServers: [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' }
@@ -308,7 +279,6 @@ const abrioDesdeNotificacion = new URLSearchParams(window.location.search).has('
 let ringInterval = null;
 let audioCtx = null;
 
-/* — helpers diagnóstico — */
 function d(id, tipo, txt) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -322,68 +292,50 @@ function ocultarDiag() {
   setTimeout(function(){ if(b) b.style.display='none'; }, 600);
 }
 
-function sdkError() { d('d1','err','No se pudo cargar Firebase SDK (sin internet?)'); }
+function sdkError() { d('d1','err','No se pudo cargar Firebase SDK'); }
 
 function sdkListo() {
   d('d1','ok','Firebase SDK cargado');
-
-  if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith('AIzaSyBExample')) {
-    d('d2','err','Falta pegar el apiKey real de Firebase');
-    return;
-  }
+  const cfg = RINGNOW_CONFIG.firebase;
+  if (!cfg.apiKey) { d('d2','err','Falta apiKey en config.js'); return; }
 
   try {
-    firebase.initializeApp(firebaseConfig);
-    d('d2','ok','App inicializada · ' + firebaseConfig.projectId);
+    firebase.initializeApp(cfg);
+    d('d2','ok','App inicializada · ' + cfg.projectId);
   } catch(e) {
-    d('d2','err','initializeApp error: ' + e.message);
-    return;
+    d('d2','err','initializeApp error: ' + e.message); return;
   }
 
-  try {
-    db = firebase.database();
-  } catch(e) {
-    d('d3','err','database() error: ' + e.message);
-    return;
+  try { db = firebase.database(); } catch(e) {
+    d('d3','err','database() error: ' + e.message); return;
   }
 
   db.ref('.info/connected').on('value', function(snap) {
-    if (snap.val() === true) {
-      d('d3','ok','Base de datos conectada ✓');
-      detectarDepto();
-    } else {
-      d('d3','wai','Esperando conexión...');
-    }
+    if (snap.val() === true) { d('d3','ok','Base de datos conectada ✓'); detectarDepto(); }
+    else { d('d3','wai','Esperando conexión...'); }
   });
 
   setTimeout(function() {
-    if (miDepto === undefined) {
-      d('d3','ok','Base de datos lista');
-      detectarDepto();
-    }
+    if (miDepto === undefined) { d('d3','ok','Base de datos lista'); detectarDepto(); }
   }, 8000);
 }
 
-/* — detectar depto — */
 function detectarDepto() {
   const params = new URLSearchParams(window.location.search);
   const paramDepto = params.get('depto');
   const paramCallId = params.get('callId');
 
-  if (paramDepto && !isNaN(paramDepto) && parseInt(paramDepto) > 0) {
+  if (paramDepto) {
     d('d4','ok','Depto detectado por URL: ' + paramDepto);
-    // Si viene con callId (desde notificación ntfy), mostrar llamada apenas Firebase esté listo
-    if (paramCallId) {
-      pendingCallId = paramCallId;
-    }
-    activarDepto(parseInt(paramDepto));
+    if (paramCallId) pendingCallId = paramCallId;
+    activarDepto(paramDepto);
     return;
   }
 
   const guardado = localStorage.getItem('portero_depto');
-  if (guardado && !isNaN(guardado)) {
+  if (guardado) {
     d('d4','ok','Depto detectado por memoria: ' + guardado);
-    activarDepto(parseInt(guardado));
+    activarDepto(guardado);
     return;
   }
 
@@ -393,111 +345,74 @@ function detectarDepto() {
 }
 
 function configurarDepto() {
-  const val = parseInt(document.getElementById('input-depto').value);
-  if (!val || val < 1 || val > 99) { toast('Ingresá un número válido (1-99)'); return; }
+  const val = document.getElementById('input-depto').value.trim();
+  if (!val) { toast('Ingresá un número válido'); return; }
   activarDepto(val);
 }
 
-function generarCanalNtfy() {
-  // Generar canal aleatorio único para este depto
+function generarCanalNtfy(depto) {
+  const slug = RINGNOW_CONFIG.edificio.slug.toLowerCase().replace(/[^a-z0-9]/g, '');
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
   let id = '';
-  for (let i = 0; i < 8; i++) id += chars[Math.floor(Math.random() * chars.length)];
-  return 'portero-be3225-' + id;
+  for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return 'rn-' + slug + '-d' + depto + '-' + id;
 }
 
 function activarDepto(n) {
   miDepto = n;
   localStorage.setItem('portero_depto', n);
 
-  // Obtener o generar canal ntfy privado
   let canal = localStorage.getItem('portero_canal_' + n);
   if (!canal) {
-    canal = generarCanalNtfy();
+    canal = generarCanalNtfy(n);
     localStorage.setItem('portero_canal_' + n, canal);
   }
-  // Guardar canal en Firebase para que el visitante lo encuentre
   db.ref('canales/depto' + n).set({ canal: canal });
 
   document.getElementById('pantalla-config').style.display = 'none';
   document.getElementById('standby-num').textContent = n;
   document.getElementById('standby-canal').textContent = canal;
-  // Solo mostrar standby si NO viene desde notificación
   if (!abrioDesdeNotificacion) {
     document.getElementById('pantalla-standby').style.display = 'flex';
   }
   ocultarDiag();
 
-  // Pedir permiso de micrófono AHORA mientras el usuario interactúa con la página
   navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-    .then(function(stream) {
-      stream.getTracks().forEach(function(t) { t.stop(); });
-    })
-    .catch(function(err) {
-      document.getElementById('standby-status').innerHTML = '<span style="color:#e74c3c;font-size:12px">⚠️ Habilitá el micrófono para poder hablar</span>';
-    });
+    .then(function(stream) { stream.getTracks().forEach(function(t) { t.stop(); }); })
+    .catch(function() {});
 
-  // Guardar depto en Firebase para que el SW lo pueda leer
-  if (typeof db !== 'undefined') {
-    db.ref('residentes/depto' + n + '/token').set({
-      depto: n,
-      ts: Date.now(),
-      ua: navigator.userAgent.substring(0, 50)
-    });
-  }
-
-  // Registrar Service Worker y pedir permiso de notificaciones
   registrarSW(n);
-
   escuchar();
 }
 
 function registrarSW(depto) {
-  if (!('serviceWorker' in navigator)) {
-    console.log('SW no soportado');
-    return;
-  }
-  
+  if (!('serviceWorker' in navigator)) return;
   Notification.requestPermission().then(function(permiso) {
-    if (permiso !== 'granted') {
-      console.log('Notificaciones no permitidas');
-      return;
-    }
-    
-    navigator.serviceWorker.register('/blancoencalada3225/sw.js', { scope: '/blancoencalada3225/' })
+    if (permiso !== 'granted') return;
+    const swURL = RINGNOW_CONFIG.baseURL.replace('https://ring-now.github.io', '') + '/sw.js';
+    const scope  = RINGNOW_CONFIG.baseURL.replace('https://ring-now.github.io', '') + '/';
+    navigator.serviceWorker.register(swURL, { scope: scope })
+      .then(function(reg2) { return reg2; })
+      .catch(function(){});
+    // pass config
+    navigator.serviceWorker.register(swURL, { scope: scope })
       .then(function(reg) {
-        console.log('SW registrado, estado:', reg.active ? 'activo' : 'instalando');
-        
         function enviarDepto(worker) {
-          worker.postMessage({ type: 'WATCH_DEPTO', depto: depto });
-          console.log('Mensaje enviado al SW para depto', depto);
+          worker.postMessage({
+            type: 'WATCH_DEPTO',
+            depto: depto,
+            firebaseDB: RINGNOW_CONFIG.firebase.databaseURL,
+            baseURL: RINGNOW_CONFIG.baseURL
+          });
         }
-        
-        // Si ya está activo
-        if (reg.active) {
-          enviarDepto(reg.active);
-        }
-        
-        // Cuando se active
+        if (reg.active) enviarDepto(reg.active);
         if (reg.installing) {
           reg.installing.addEventListener('statechange', function() {
             if (this.state === 'activated') enviarDepto(this);
           });
         }
-        
-        // También via ready
-        navigator.serviceWorker.ready.then(function(readyReg) {
-          if (readyReg.active) enviarDepto(readyReg.active);
-        });
-        
-        // Escuchar mensajes del SW
-        navigator.serviceWorker.addEventListener('message', function(event) {
-          console.log('Mensaje del SW:', event.data);
-        });
-      })
-      .catch(function(err) {
-        console.log('SW error:', err);
-      });
+        navigator.serviceWorker.ready.then(function(r) { if (r.active) enviarDepto(r.active); });
+      }).catch(function(err) { console.log('SW error:', err); });
   });
 }
 
@@ -508,53 +423,37 @@ function cambiarDepto() {
   document.getElementById('pantalla-standby').style.display = 'none';
   document.getElementById('diag-box').style.display = 'block';
   document.getElementById('diag-box').style.opacity = '1';
-  d('d4','wai','Ingresá tu número de depto');
   ocultarDiag();
   document.getElementById('pantalla-config').style.display = 'flex';
 }
 
-/* — escuchar llamadas — */
 function escuchar() {
   if (escRef) escRef.off();
-  escRef = db.ref('calls').orderByChild('deptoId').equalTo(miDepto);
+  escRef = db.ref('calls').orderByChild('deptoId').equalTo(isNaN(miDepto) ? miDepto : parseInt(miDepto));
 
-  // Si viene desde notificación ntfy, verificar que la llamada sigue activa
   if (pendingCallId) {
-    var pid = pendingCallId;
-    pendingCallId = null;
+    var pid = pendingCallId; pendingCallId = null;
     callRef = db.ref('calls/' + pid);
     callRef.once('value').then(function(snap) {
       var call = snap.val();
-      if (!call) { toast('La llamada ya no está disponible'); return; }
-      if (call.status !== 'ringing') { 
-        // No mostrar nada, simplemente volver al standby silenciosamente
-        return; 
-      }
-      var edad = Date.now() - (call.timestamp || 0);
-      if (edad > 120000) { return; } // más de 2 minutos, ignorar silenciosamente
+      if (!call || call.status !== 'ringing') return;
+      if (Date.now() - (call.timestamp || 0) > 120000) return;
       mostrarLlamadaEntrante();
     });
   }
 
-  escRef.on('child_added', function(snap) {
-    procesarLlamada(snap);
-  });
-  escRef.on('child_changed', function(snap) {
-    procesarLlamada(snap);
-  });
+  escRef.on('child_added', function(snap) { procesarLlamada(snap); });
+  escRef.on('child_changed', function(snap) { procesarLlamada(snap); });
 }
 
 function procesarLlamada(snap) {
   const call = snap.val();
   if (!call || call.status !== 'ringing') return;
-  const edad = Date.now() - (call.timestamp || 0);
-  if (edad > 90000) return; // ignorar llamadas viejas
-
+  if (Date.now() - (call.timestamp || 0) > 90000) return;
   callRef = db.ref('calls/' + snap.key);
   mostrarLlamadaEntrante();
 }
 
-/* — LLAMADA ENTRANTE — */
 function mostrarLlamadaEntrante() {
   document.getElementById('pantalla-standby').style.display = 'none';
   const pl = document.getElementById('pantalla-llamada');
@@ -564,74 +463,57 @@ function mostrarLlamadaEntrante() {
   document.getElementById('btn-colgar').style.display = 'none';
   document.getElementById('ring-flash').style.display = 'block';
   document.getElementById('llamada-estado').textContent = '';
-  // Descartar notificación ntfy si existe
+
   if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
     navigator.serviceWorker.ready.then(function(reg) {
-      reg.getNotifications().then(function(notifs) {
-        notifs.forEach(function(n) { n.close(); });
-      });
+      reg.getNotifications().then(function(notifs) { notifs.forEach(function(n) { n.close(); }); });
     });
   }
 
   iniciarRing();
 
-  // Mostrar foto preview del visitante de fondo
   callRef.child('preview').on('value', function(snap) {
     if (snap.val()) {
       var img = document.getElementById('preview-visitante');
-      img.src = snap.val();
-      img.style.display = 'block';
+      img.src = snap.val(); img.style.display = 'block';
       document.getElementById('pantalla-llamada').style.background = 'transparent';
     }
   });
 
-  // Escuchar si el visitante colgó antes de atender
   callRef.child('status').on('value', function(snap) {
     if (snap.val() === 'ended' || snap.val() === 'rejected') {
-      if (!callRef) return; // ya colgó el residente
+      if (!callRef) return;
       detenerRing();
       if (pc) { pc.close(); pc = null; }
       if (micStream) { micStream.getTracks().forEach(function(t) { t.stop(); }); micStream = null; }
       document.getElementById('video-visitante').srcObject = null;
       callRef.off(); callRef = null;
       document.getElementById('pantalla-llamada').style.display = 'none';
-      if (abrioDesdeNotificacion) {
-        cerrarApp();
-      } else {
-        setTimeout(volverStandby, 1500);
-      }
+      abrioDesdeNotificacion ? cerrarApp() : setTimeout(volverStandby, 1500);
     }
   });
 
-  // Auto-rechazar a los 40s
   setTimeout(function() {
-    if (document.getElementById('btns-entrante').style.display !== 'none') {
-      rechazar();
-    }
+    if (document.getElementById('btns-entrante').style.display !== 'none') rechazar();
   }, 40000);
 }
 
-/* — ATENDER — */
 async function atender() {
   detenerRing();
   document.getElementById('btns-entrante').style.display = 'none';
   document.getElementById('btn-colgar').style.display = 'flex';
   document.getElementById('ring-flash').style.display = 'none';
   document.getElementById('llamada-estado').textContent = '';
-  // Ocultar pantalla de llamada entrante — el video ya está de fondo
   const incomingScreen = document.getElementById('incoming-screen');
   if (incomingScreen) incomingScreen.style.display = 'none';
   var img = document.getElementById('preview-visitante');
-  img.style.display = 'none';
-  img.src = '';
+  img.style.display = 'none'; img.src = '';
   document.getElementById('pantalla-llamada').style.background = '';
-  // Detener listener de preview
   if (callRef) callRef.child('preview').off();
   if (audioCtx) { try { audioCtx.close(); } catch(e) {} audioCtx = null; }
 
   try {
     micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-
     pc = new RTCPeerConnection(ICE);
     micStream.getTracks().forEach(function(t) { pc.addTrack(t, micStream); });
 
@@ -655,21 +537,18 @@ async function atender() {
       if (e.candidate) callRef.child('residentCandidates').push(e.candidate.toJSON());
     };
 
-    // Leer oferta del visitante
     const snap = await callRef.once('value');
     const data = snap.val();
     if (!data || !data.offer) throw new Error('Sin oferta del visitante');
 
     await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
 
-    // ICE candidates del visitante ya guardados
     if (data.visitorCandidates) {
       for (const k in data.visitorCandidates) {
         try { await pc.addIceCandidate(new RTCIceCandidate(data.visitorCandidates[k])); } catch(e) {}
       }
     }
 
-    // ICE candidates nuevos del visitante
     callRef.child('visitorCandidates').on('child_added', async function(s) {
       if (s.val() && pc) try { await pc.addIceCandidate(new RTCIceCandidate(s.val())); } catch(e) {}
     });
@@ -684,7 +563,6 @@ async function atender() {
   }
 }
 
-/* — RECHAZAR / COLGAR — */
 async function rechazar() {
   detenerRing();
   if (callRef) { await callRef.update({ status: 'rejected' }).catch(function(){}); callRef.off(); callRef = null; }
@@ -698,43 +576,28 @@ async function colgar() {
   if (callRef) { await callRef.update({ status: 'ended' }).catch(function(){}); callRef.off(); callRef = null; }
   document.getElementById('video-visitante').srcObject = null;
   document.getElementById('audio-visitante').srcObject = null;
-  document.getElementById('pantalla-llamada').style.background = '';
   var img = document.getElementById('preview-visitante');
-  img.style.display = 'none';
-  img.src = '';
+  img.style.display = 'none'; img.src = '';
   document.getElementById('pantalla-llamada').style.background = '';
-  // Detener listener de preview
-  if (callRef) callRef.child('preview').off();
   document.getElementById('pantalla-llamada').style.display = 'none';
-  if (abrioDesdeNotificacion) {
-    cerrarApp();
-  } else {
-    setTimeout(volverStandby, 1500);
-  }
+  abrioDesdeNotificacion ? cerrarApp() : setTimeout(volverStandby, 1500);
 }
 
 function cerrarApp() {
-  // Desconectar todo
   if (escRef) { escRef.off(); escRef = null; }
   if (callRef) { callRef.off(); callRef = null; }
   if (pc) { pc.close(); pc = null; }
   if (micStream) { micStream.getTracks().forEach(function(t) { t.stop(); }); micStream = null; }
-  // Redirigir a página de cierre limpia
-  window.location.href = 'https://wwccrrss.github.io/blancoencalada3225/fin.html';
+  window.location.href = RINGNOW_CONFIG.baseURL + '/fin.html';
 }
 
 function volverStandby() {
   document.getElementById('pantalla-llamada').style.display = 'none';
-  // Si vino desde notificación, nunca volver al standby — mostrar fin y no escuchar más
-  if (abrioDesdeNotificacion) {
-    cerrarApp();
-    return;
-  }
+  if (abrioDesdeNotificacion) { cerrarApp(); return; }
   document.getElementById('pantalla-standby').style.display = 'flex';
   escuchar();
 }
 
-/* — RING con Web Audio (sin archivos externos) — */
 function ring() {
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -752,20 +615,14 @@ function ring() {
   } catch(e) {}
 }
 function iniciarRing() {
-  detenerRing(); // limpiar cualquier ring anterior
-  // Recrear audioCtx si fue cerrado
+  detenerRing();
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   ring();
   ringInterval = setInterval(ring, 1600);
 }
-
 function detenerRing() {
   if (ringInterval) { clearInterval(ringInterval); ringInterval = null; }
-  // Cerrar el contexto de audio para cortar cualquier tono en curso
-  if (audioCtx) {
-    try { audioCtx.close(); } catch(e) {}
-    audioCtx = null;
-  }
+  if (audioCtx) { try { audioCtx.close(); } catch(e) {} audioCtx = null; }
 }
 
 function toast(msg) {

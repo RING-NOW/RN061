@@ -1,50 +1,48 @@
-// Service Worker — Portero Digital Blanco Encalada 3225 v4
-// Lee el depto desde Cache API (guardado por la página) y desde Firebase
-
-const FIREBASE_DB = 'https://blancoencalada3225-default-rtdb.firebaseio.com';
+// Service Worker — RINGNOW Portero Digital v1
+// Lee la config del edificio desde Cache API
 
 let watchInterval = null;
 let lastCallId = null;
 let myDepto = null;
+let firebaseDB = null;
+let baseURL = null;
 
 self.addEventListener('install', function(e) { self.skipWaiting(); });
 
 self.addEventListener('activate', function(e) {
-  e.waitUntil(
-    clients.claim().then(function() {
-      return arrancar();
-    })
-  );
+  e.waitUntil(clients.claim().then(function() { return arrancar(); }));
 });
 
-// Recibir depto desde la página
+// Recibir depto y config desde la página
 self.addEventListener('message', function(event) {
   if (event.data && event.data.type === 'WATCH_DEPTO') {
-    myDepto = parseInt(event.data.depto);
-    guardarDepto(myDepto);
+    myDepto = event.data.depto;
+    guardarConfig({ depto: myDepto, firebaseDB: event.data.firebaseDB, baseURL: event.data.baseURL });
     iniciarPolling();
   }
 });
 
-function guardarDepto(depto) {
-  return caches.open('portero-v4').then(function(cache) {
-    return cache.put('/portero-depto', new Response(String(depto)));
+function guardarConfig(cfg) {
+  return caches.open('ringnow-v1').then(function(cache) {
+    return cache.put('/portero-config', new Response(JSON.stringify(cfg)));
   });
 }
 
-function leerDepto() {
-  return caches.open('portero-v4').then(function(cache) {
-    return cache.match('/portero-depto').then(function(resp) {
-      if (resp) return resp.text().then(function(t) { return parseInt(t) || null; });
+function leerConfig() {
+  return caches.open('ringnow-v1').then(function(cache) {
+    return cache.match('/portero-config').then(function(resp) {
+      if (resp) return resp.json();
       return null;
     });
   });
 }
 
 function arrancar() {
-  return leerDepto().then(function(depto) {
-    if (depto) {
-      myDepto = depto;
+  return leerConfig().then(function(cfg) {
+    if (cfg && cfg.depto) {
+      myDepto = cfg.depto;
+      firebaseDB = cfg.firebaseDB;
+      baseURL = cfg.baseURL;
       iniciarPolling();
     }
   });
@@ -52,20 +50,21 @@ function arrancar() {
 
 function iniciarPolling() {
   if (watchInterval) clearInterval(watchInterval);
-  if (!myDepto) return;
+  if (!myDepto || !firebaseDB) return;
   checkForCalls();
   watchInterval = setInterval(checkForCalls, 5000);
 }
 
 function checkForCalls() {
-  if (!myDepto) {
-    leerDepto().then(function(d) {
-      if (d) { myDepto = d; iniciarPolling(); }
+  if (!myDepto || !firebaseDB) {
+    leerConfig().then(function(cfg) {
+      if (cfg) { myDepto = cfg.depto; firebaseDB = cfg.firebaseDB; baseURL = cfg.baseURL; iniciarPolling(); }
     });
     return;
   }
 
-  fetch(FIREBASE_DB + '/calls.json?orderBy="deptoId"&equalTo=' + myDepto + '&limitToLast=3')
+  var deptoVal = isNaN(myDepto) ? '"' + myDepto + '"' : myDepto;
+  fetch(firebaseDB + '/calls.json?orderBy="deptoId"&equalTo=' + deptoVal + '&limitToLast=3')
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (!data || typeof data !== 'object') return;
@@ -83,34 +82,37 @@ function checkForCalls() {
 }
 
 function mostrarNotificacion(depto, callId) {
-  self.registration.showNotification('🔔 Llamada — Depto ' + depto, {
-    body: 'Tocaron el timbre en Blanco Encalada 3225',
-    icon: 'https://wwccrrss.github.io/blancoencalada3225/icon-192.png',
+  var url = (baseURL || '') + '/timbre-residente.html?depto=' + depto + '&callId=' + callId;
+  self.registration.showNotification('Llamada — Depto ' + depto, {
+    body: 'Tocaron el timbre',
     vibrate: [300, 100, 300, 100, 300],
     requireInteraction: true,
     tag: 'llamada',
     renotify: true,
-    data: { depto: depto, callId: callId },
+    data: { depto: depto, callId: callId, url: url },
     actions: [
-      { action: 'atender', title: '📞 Atender' },
-      { action: 'rechazar', title: '📵 Rechazar' }
+      { action: 'atender', title: 'Atender' },
+      { action: 'rechazar', title: 'Rechazar' }
     ]
   });
 }
 
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
-  var depto = event.notification.data && event.notification.data.depto;
-  var callId = event.notification.data && event.notification.data.callId;
+  var data = event.notification.data || {};
+  var depto = data.depto;
+  var callId = data.callId;
+  var url = data.url;
 
   if (event.action === 'rechazar') {
-    fetch(FIREBASE_DB + '/calls/' + callId + '/status.json', {
-      method: 'PUT', body: JSON.stringify('rejected')
-    }).catch(function() {});
+    if (firebaseDB && callId) {
+      fetch(firebaseDB + '/calls/' + callId + '/status.json', {
+        method: 'PUT', body: JSON.stringify('rejected')
+      }).catch(function() {});
+    }
     return;
   }
 
-  var url = 'https://wwccrrss.github.io/blancoencalada3225/timbre-residente.html?depto=' + depto + '&callId=' + callId;
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(list) {
       for (var i = 0; i < list.length; i++) {
