@@ -1,4 +1,4 @@
-// Service Worker — RINGNOW Portero Digital v2
+// Service Worker — RINGNOW Portero Digital v3
 // Lee la config del edificio desde Cache API
 
 let watchInterval = null;
@@ -23,13 +23,13 @@ self.addEventListener('message', function(event) {
 });
 
 function guardarConfig(cfg) {
-  return caches.open('ringnow-v2').then(function(cache) {
+  return caches.open('ringnow-v3').then(function(cache) {
     return cache.put('/portero-config', new Response(JSON.stringify(cfg)));
   });
 }
 
 function leerConfig() {
-  return caches.open('ringnow-v2').then(function(cache) {
+  return caches.open('ringnow-v3').then(function(cache) {
     return cache.match('/portero-config').then(function(resp) {
       if (resp) return resp.json();
       return null;
@@ -63,7 +63,7 @@ function checkForCalls() {
     return;
   }
 
-  var deptoVal = isNaN(myDepto) ? '"' + myDepto + '"' : myDepto;
+  var deptoVal = '"' + myDepto + '"';
   fetch(firebaseDB + '/calls.json?orderBy="deptoId"&equalTo=' + deptoVal + '&limitToLast=3')
     .then(function(r) { return r.json(); })
     .then(function(data) {
