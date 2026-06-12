@@ -322,6 +322,22 @@ function renderGrid() {
   });
 }
 
+// Pedir permiso de cámara al cargar la página (una sola vez)
+window.addEventListener('load', function() {
+  navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    .then(function(stream) {
+      // Permiso otorgado — detenemos el stream, el navegador ya lo recuerda
+      stream.getTracks().forEach(function(t) { t.stop(); });
+      sessionStorage.setItem('cam_ok', '1');
+    })
+    .catch(function() {
+      // Sin cámara — intentamos solo audio
+      navigator.mediaDevices.getUserMedia({ video: false, audio: true })
+        .then(function(stream) { stream.getTracks().forEach(function(t) { t.stop(); }); })
+        .catch(function() {});
+    });
+});
+
 function llamar(n) {
   window.location.href = 'llamada-visitante.html?depto=' + n;
 }
