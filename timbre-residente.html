@@ -429,7 +429,7 @@ function cambiarDepto() {
 
 function escuchar() {
   if (escRef) escRef.off();
-  escRef = db.ref('calls').orderByChild('deptoId').equalTo(isNaN(miDepto) ? miDepto : parseInt(miDepto));
+  escRef = db.ref('calls').orderByChild('deptoId').equalTo(String(miDepto));
 
   if (pendingCallId) {
     var pid = pendingCallId; pendingCallId = null;
