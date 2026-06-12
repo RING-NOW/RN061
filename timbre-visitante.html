@@ -5,301 +5,149 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Portero Digital — RINGNOW</title>
 <script src="config.js"></script>
-<link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root { --oro: #C9A84C; --fondo: #111; --texto: #f0ede8; --suave: #888; --verde: #27ae60; --rojo: #c0392b; }
 
   body {
     min-height: 100vh;
     background: #7a5510;
-    padding: 0;
     font-family: 'Barlow Condensed', Verdana, sans-serif;
   }
 
-  /* PLACA */
-  .placa {
+  /* ── PANTALLA PLACA (visitante) ── */
+  #pantalla-placa {
     width: 100%;
     min-height: 100vh;
     background: linear-gradient(160deg, #9a7020 0%, #7a5510 40%, #5a3a08 100%);
     padding: 36px 24px 28px;
-    position: relative;
     display: flex;
     flex-direction: column;
   }
-
-  /* MARCA RINGNOW */
-  .ringnow-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 24px;
-  }
-  .ringnow-logo {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 5px;
-    color: rgba(255, 210, 80, 0.5);
-    text-transform: uppercase;
-  }
-  .ringnow-dot {
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: rgba(255, 210, 80, 0.35);
-  }
-
-  /* DIRECCIÓN */
-  .direccion {
-    text-align: center;
-    margin-bottom: 40px;
-    position: relative;
-  }
-  .direccion-etiqueta {
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 4px;
-    color: rgba(30,15,0,0.45);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-  .direccion-texto {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: #2a1800;
-    text-shadow: 0 1px 0 rgba(255,200,50,0.3), 0 -1px 0 rgba(0,0,0,0.3);
-    text-transform: uppercase;
-  }
-  .direccion-linea {
-    width: 40px; height: 1px;
-    background: rgba(0,0,0,0.2);
-    margin: 10px auto 0;
-    position: relative;
-  }
-  .direccion-linea::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(255,200,50,0.15);
-    transform: translateY(1px);
-  }
-
-  /* GRID DE TIMBRES */
-  .timbres-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px 12px;
-    margin-bottom: 36px;
-    padding: 0 4px;
-    flex: 1;
-  }
-
-  .timbre {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 7px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-
+  .ringnow-header { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 24px; }
+  .ringnow-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 5px; color: rgba(255,210,80,0.5); text-transform: uppercase; }
+  .ringnow-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,210,80,0.35); }
+  .direccion { text-align: center; margin-bottom: 40px; }
+  .direccion-etiqueta { font-size: 9px; font-weight: 600; letter-spacing: 4px; color: rgba(30,15,0,0.45); text-transform: uppercase; margin-bottom: 6px; }
+  .direccion-texto { font-size: 20px; font-weight: 700; letter-spacing: 3px; color: #2a1800; text-shadow: 0 1px 0 rgba(255,200,50,0.3); text-transform: uppercase; }
+  .direccion-linea { width: 40px; height: 1px; background: rgba(0,0,0,0.2); margin: 10px auto 0; }
+  .timbres-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 12px; margin-bottom: 36px; padding: 0 4px; flex: 1; }
+  .timbre { display: flex; flex-direction: column; align-items: center; gap: 7px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .timbre-boton {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
+    width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
     background: radial-gradient(circle at 38% 32%, #a07520 0%, #7a5510 45%, #4a3005 100%);
-    box-shadow:
-      inset 0 1px 3px rgba(220,180,60,0.35),
-      inset 0 -2px 5px rgba(0,0,0,0.55),
-      0 3px 8px rgba(0,0,0,0.45),
-      0 1px 2px rgba(0,0,0,0.3);
-    position: relative;
-    transition: transform 0.1s, box-shadow 0.1s;
-    -webkit-tap-highlight-color: transparent;
+    box-shadow: inset 0 1px 3px rgba(220,180,60,0.35), inset 0 -2px 5px rgba(0,0,0,0.55), 0 3px 8px rgba(0,0,0,0.45);
+    position: relative; transition: transform 0.1s, box-shadow 0.1s; -webkit-tap-highlight-color: transparent;
   }
-  .timbre-boton::after {
-    content: '';
-    position: absolute;
-    top: 30%; left: 25%; right: 40%;
-    height: 18%;
-    background: rgba(255,220,80,0.12);
-    border-radius: 50%;
-    transform: rotate(-20deg);
-  }
-  .timbre-boton:active {
-    transform: scale(0.90);
-    box-shadow:
-      inset 0 3px 7px rgba(0,0,0,0.75),
-      0 1px 3px rgba(0,0,0,0.3);
-  }
+  .timbre-boton:active { transform: scale(0.90); box-shadow: inset 0 3px 7px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.3); }
+  .timbre-num { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; color: #2a1800; }
+  .footer { margin-top: auto; }
+  .aviso-grabado { border-top: 1px solid rgba(0,0,0,0.2); padding-top: 14px; margin-bottom: 12px; }
+  .aviso-texto { font-size: 9px; line-height: 1.65; color: rgba(30,15,0,0.6); text-align: center; }
+  .ringnow-footer { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 4px; color: rgba(30,15,0,0.3); text-transform: uppercase; padding-bottom: 4px; }
+  #diag-box { text-align: center; font-size: 10px; letter-spacing: 2px; color: rgba(30,15,0,0.45); margin-bottom: 12px; min-height: 16px; }
 
-  .timbre-num {
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: #2a1800;
-    text-shadow: 0 1px 0 rgba(255,200,50,0.2);
+  /* ── PANTALLA LLAMADA ── */
+  #pantalla-llamada {
+    display: none;
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--fondo);
+    flex-direction: column; align-items: center; justify-content: space-between;
+    padding: 56px 24px 68px;
+    font-family: 'DM Sans', sans-serif;
   }
+  #video-yo { width: 110px; height: 110px; object-fit: cover; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); transform: scaleX(-1); flex-shrink: 0; }
+  .ringnow-top { font-size: 10px; font-weight: 700; letter-spacing: 5px; color: rgba(255,255,255,0.15); text-transform: uppercase; }
+  .llamando-sub { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: #888; }
+  .llamando-depto { font-family: 'Bebas Neue', sans-serif; font-size: 80px; color: var(--oro); line-height: 1; }
+  .llamando-edificio { font-size: 12px; color: #666; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
+  .pulso-ring { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; }
+  .pulso-ring::before, .pulso-ring::after { content: ''; position: absolute; border-radius: 50%; border: 2px solid var(--oro); animation: pulso 1.8s ease-out infinite; }
+  .pulso-ring::after { animation-delay: 0.6s; }
+  @keyframes pulso { 0% { width: 100px; height: 100px; opacity: 0.8; } 100% { width: 170px; height: 170px; opacity: 0; } }
+  .estado-llamada { font-size: 13px; color: #888; text-align: center; min-height: 20px; letter-spacing: 1px; }
+  .btn-colgar { width: 72px; height: 72px; border-radius: 50%; border: none; background: var(--rojo); font-size: 28px; cursor: pointer; box-shadow: 0 0 0 8px rgba(192,57,43,.2); display: flex; align-items: center; justify-content: center; transition: transform .15s; -webkit-tap-highlight-color: transparent; }
+  .btn-colgar:active { transform: scale(.9); }
 
-  /* FOOTER */
-  .footer {
-    margin-top: auto;
-  }
-  .aviso-grabado {
-    border-top: 1px solid rgba(0,0,0,0.2);
-    padding-top: 14px;
-    margin-bottom: 12px;
-    position: relative;
-  }
-  .aviso-grabado::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: rgba(255,200,50,0.12);
-    margin-top: 1px;
-  }
-  .aviso-texto {
-    font-size: 9px;
-    line-height: 1.65;
-    color: rgba(30,15,0,0.6);
-    text-align: center;
-    letter-spacing: 0.2px;
-    text-shadow: 0 1px 0 rgba(255,200,50,0.1);
-  }
-  .ringnow-footer {
-    text-align: center;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 4px;
-    color: rgba(30,15,0,0.3);
-    text-transform: uppercase;
-    padding-bottom: 4px;
-  }
-
-  /* Loading / estado */
-  #diag-box {
-    text-align: center;
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: rgba(30,15,0,0.45);
-    margin-bottom: 12px;
-    min-height: 16px;
-  }
-  #pantalla-seleccion { display: none; }
-
-  /* Toast */
-  #toast {
-    position: fixed; bottom: 40px; left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: rgba(0,0,0,0.85); color: #fff;
-    padding: 10px 20px; border-radius: 20px;
-    font-size: 13px; font-family: sans-serif;
-    opacity: 0; transition: all .3s;
-    pointer-events: none; white-space: nowrap; z-index: 100;
-  }
+  #toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(0,0,0,0.85); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all .3s; pointer-events: none; white-space: nowrap; z-index: 200; }
   #toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
-<div class="placa">
+<audio id="audio-remoto" autoplay playsinline></audio>
 
+<!-- PLACA -->
+<div id="pantalla-placa">
   <div class="ringnow-header">
     <div class="ringnow-dot"></div>
     <div class="ringnow-logo">RingNow</div>
     <div class="ringnow-dot"></div>
   </div>
-
   <div class="direccion">
     <div class="direccion-etiqueta">Portero Digital</div>
     <div class="direccion-texto" id="txt-direccion">—</div>
     <div class="direccion-linea"></div>
   </div>
-
   <div id="diag-box">CONECTANDO...</div>
-
-  <div id="pantalla-seleccion">
+  <div id="pantalla-seleccion" style="display:none;">
     <div class="timbres-grid" id="grid"></div>
   </div>
-
   <div class="footer">
     <div class="aviso-grabado">
-      <div class="aviso-texto">
-        Tocar un timbre activa su cámara para que el residente pueda identificarlo en tiempo real,
-        e implica la aceptación de los términos del sistema. La conexión es directa y privada
-        entre dispositivos (WebRTC), conforme a la Ley 25.326.
-      </div>
+      <div class="aviso-texto">Tocar un timbre activa su cámara para que el residente pueda identificarlo en tiempo real, e implica la aceptación de los términos del sistema.</div>
     </div>
     <div class="ringnow-footer">RINGNOW</div>
   </div>
+</div>
 
+<!-- LLAMADA (misma página, sin navegación) -->
+<div id="pantalla-llamada">
+  <div class="ringnow-top">RingNow</div>
+  <video id="video-yo" autoplay muted playsinline></video>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:12px;flex:1;justify-content:center;">
+    <div class="llamando-sub" id="llamando-sub">Llamando al depto</div>
+    <div class="pulso-ring">
+      <div class="llamando-depto" id="depto-num">—</div>
+    </div>
+    <div class="llamando-edificio" id="txt-edificio-llamada">—</div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+    <div class="estado-llamada" id="estado-llamada">Activando cámara...</div>
+    <button class="btn-colgar" onclick="colgar()">📵</button>
+  </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-// Aplicar config
 document.getElementById('txt-direccion').textContent = RINGNOW_CONFIG.edificio.nombre;
+document.getElementById('txt-edificio-llamada').textContent = RINGNOW_CONFIG.edificio.nombre;
 document.title = 'Portero Digital — ' + RINGNOW_CONFIG.edificio.nombre;
 </script>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
-window.addEventListener('load', function() {
-  function tryLoad(urls, idx, onSuccess, onFail) {
-    if (idx >= urls.length) { onFail(); return; }
-    var s = document.createElement('script');
-    s.src = urls[idx];
-    s.onload = onSuccess;
-    s.onerror = function() { tryLoad(urls, idx+1, onSuccess, onFail); };
-    document.head.appendChild(s);
-  }
-  var appUrls = [
-    'https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js',
-    'https://cdn.jsdelivr.net/npm/firebase@9.22.2/compat/app/dist/index.js',
-    'https://unpkg.com/firebase@9.22.2/compat/app/dist/index.js'
-  ];
-  var dbUrls = [
-    'https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js',
-    'https://cdn.jsdelivr.net/npm/firebase@9.22.2/compat/database/dist/index.js',
-    'https://unpkg.com/firebase@9.22.2/compat/database/dist/index.js'
-  ];
-  tryLoad(appUrls, 0, function() {
-    tryLoad(dbUrls, 0, sdkListo, sdkError);
-  }, sdkError);
+const ICE = { iceServers: [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' }
+]};
+
+let db, pc, localStream, callRef, llamadaConectada = false, wakeLock = null;
+
+firebase.initializeApp(RINGNOW_CONFIG.firebase);
+db = firebase.database();
+
+db.ref('.info/connected').on('value', function(snap) {
+  if (snap.val() === true) mostrarListo();
 });
-</script>
-
-<script>
-let db;
-
-function sdkError() {
-  const box = document.getElementById('diag-box');
-  box.textContent = '⚠️ Sin conexión a internet';
-  box.style.color = '#c0392b';
-}
-
-function sdkListo() {
-  const cfg = RINGNOW_CONFIG.firebase;
-  if (!cfg.apiKey) { sdkError(); return; }
-
-  try { firebase.initializeApp(cfg); } catch(e) { sdkError(); return; }
-
-  try { db = firebase.database(); } catch(e) { sdkError(); return; }
-
-  db.ref('.info/connected').on('value', function(snap) {
-    if (snap.val() === true) mostrarListo();
-  });
-
-  setTimeout(function() {
-    if (document.getElementById('pantalla-seleccion').style.display === 'none') mostrarListo();
-  }, 8000);
-}
+setTimeout(function() {
+  if (document.getElementById('pantalla-seleccion').style.display === 'none') mostrarListo();
+}, 8000);
 
 function mostrarListo() {
   renderGrid();
@@ -316,30 +164,150 @@ function renderGrid() {
     const wrap = document.createElement('div');
     wrap.className = 'timbre';
     wrap.innerHTML =
-      '<button class="timbre-boton" onclick="llamar(' + n + ')"></button>' +
+      '<button class="timbre-boton" onclick="llamar(\'' + n + '\')"></button>' +
       '<span class="timbre-num">' + n + '</span>';
     g.appendChild(wrap);
   });
 }
 
-// Pedir permiso de cámara al cargar la página (una sola vez)
-window.addEventListener('load', function() {
-  navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-    .then(function(stream) {
-      // Permiso otorgado — detenemos el stream, el navegador ya lo recuerda
-      stream.getTracks().forEach(function(t) { t.stop(); });
-      sessionStorage.setItem('cam_ok', '1');
-    })
-    .catch(function() {
-      // Sin cámara — intentamos solo audio
-      navigator.mediaDevices.getUserMedia({ video: false, audio: true })
-        .then(function(stream) { stream.getTracks().forEach(function(t) { t.stop(); }); })
-        .catch(function() {});
-    });
-});
+async function llamar(n) {
+  // Mostrar pantalla de llamada ANTES de pedir cámara (requerido por Safari)
+  document.getElementById('pantalla-placa').style.display = 'none';
+  document.getElementById('pantalla-llamada').style.display = 'flex';
+  document.getElementById('depto-num').textContent = n;
+  document.getElementById('estado-llamada').textContent = 'Activando cámara...';
 
-function llamar(n) {
-  window.location.href = 'llamada-visitante.html?depto=' + n;
+  await iniciarLlamada(n);
+}
+
+async function iniciarLlamada(n) {
+  const callId = 'call_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+
+  if ('wakeLock' in navigator) {
+    navigator.wakeLock.request('screen').then(function(wl) { wakeLock = wl; }).catch(function(){});
+  }
+
+  // Notificación ntfy al residente
+  db.ref('canales/depto' + n).once('value').then(function(snap) {
+    const canal = snap.val() && snap.val().canal;
+    if (canal) {
+      fetch('https://ntfy.sh/' + canal, {
+        method: 'POST',
+        headers: {
+          'Title': 'Llamada Depto ' + n,
+          'Priority': 'urgent',
+          'Tags': 'bell',
+          'Click': RINGNOW_CONFIG.baseURL + '/timbre-residente.html?depto=' + n + '&callId=' + callId
+        },
+        body: 'Alguien tocó el timbre en ' + RINGNOW_CONFIG.edificio.nombre
+      }).catch(function(){});
+    }
+  }).catch(function(){});
+
+  try {
+    callRef = db.ref('calls/' + callId);
+    await callRef.set({
+      deptoId: n, status: 'ringing',
+      timestamp: firebase.database.ServerValue.TIMESTAMP
+    });
+    setEstado('Llamando...');
+
+    // Pedir cámara — en Safari funciona porque viene de un tap directo del usuario
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      document.getElementById('video-yo').srcObject = localStream;
+    } catch(e) {
+      try { localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true }); }
+      catch(e2) { localStream = null; }
+    }
+
+    // Preview periódico para el residente
+    if (localStream && localStream.getVideoTracks().length > 0) {
+      const canvas = document.createElement('canvas');
+      const videoEl = document.getElementById('video-yo');
+      const ctx = canvas.getContext('2d');
+      const fotoInterval = setInterval(function() {
+        if (!localStream) { clearInterval(fotoInterval); return; }
+        try {
+          canvas.width = videoEl.videoWidth || 320;
+          canvas.height = videoEl.videoHeight || 240;
+          ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+          if (callRef) callRef.update({ preview: canvas.toDataURL('image/jpeg', 0.5) });
+        } catch(e) {}
+      }, 2000);
+      window._fotoInterval = fotoInterval;
+    }
+
+    pc = new RTCPeerConnection(ICE);
+    if (localStream) localStream.getTracks().forEach(function(t) { pc.addTrack(t, localStream); });
+
+    pc.ontrack = function(e) {
+      if (e.streams[0]) {
+        const a = document.getElementById('audio-remoto');
+        a.srcObject = e.streams[0];
+        a.play().catch(function(){});
+      }
+    };
+    pc.onicecandidate = function(e) {
+      if (e.candidate && callRef) callRef.child('visitorCandidates').push(e.candidate.toJSON());
+    };
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await callRef.update({ offer: { type: offer.type, sdp: offer.sdp } });
+    setEstado('Esperando respuesta...');
+
+    callRef.child('answer').on('value', async function(snap) {
+      if (snap.val() && pc && !pc.currentRemoteDescription) {
+        try {
+          await pc.setRemoteDescription(new RTCSessionDescription(snap.val()));
+          setEstado(''); llamadaConectada = true;
+          document.getElementById('llamando-sub').textContent = 'Conectado al depto';
+        } catch(e) {}
+      }
+    });
+
+    callRef.child('residentCandidates').on('child_added', async function(snap) {
+      if (snap.val() && pc) try { await pc.addIceCandidate(new RTCIceCandidate(snap.val())); } catch(e) {}
+    });
+
+    callRef.child('status').on('value', function(snap) {
+      if (snap.val() === 'ended' || snap.val() === 'rejected') {
+        colgar(false);
+        toast(snap.val() === 'rejected' ? 'Sin respuesta' : 'Llamada finalizada');
+      }
+    });
+
+    setTimeout(function() {
+      if (!llamadaConectada) { colgar(true); toast('Sin respuesta'); }
+    }, 90000);
+
+  } catch(err) {
+    setEstado('Error: ' + err.message);
+    setTimeout(function() { volverAPlaca(); }, 4000);
+  }
+}
+
+function colgar(notif) {
+  llamadaConectada = false;
+  try { if (wakeLock) wakeLock.release(); } catch(e) {}
+  try { if (window._fotoInterval) { clearInterval(window._fotoInterval); window._fotoInterval = null; } } catch(e) {}
+  try { if (callRef) { callRef.update({ status: 'ended' }); callRef.off(); callRef = null; } } catch(e) {}
+  try { if (pc) { pc.close(); pc = null; } } catch(e) {}
+  try { if (localStream) { localStream.getTracks().forEach(function(t) { t.stop(); }); localStream = null; } } catch(e) {}
+  document.getElementById('video-yo').srcObject = null;
+  volverAPlaca();
+}
+
+function volverAPlaca() {
+  document.getElementById('pantalla-llamada').style.display = 'none';
+  document.getElementById('pantalla-placa').style.display = 'flex';
+  document.getElementById('llamando-sub').textContent = 'Llamando al depto';
+}
+
+function setEstado(txt) {
+  const el = document.getElementById('estado-llamada');
+  if (el) el.textContent = txt;
 }
 
 function toast(msg) {
@@ -348,6 +316,5 @@ function toast(msg) {
   setTimeout(function() { t.classList.remove('visible'); }, 3000);
 }
 </script>
-
 </body>
 </html>
