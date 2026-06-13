@@ -207,7 +207,7 @@ async function iniciarLlamada(n) {
   try {
     callRef = db.ref('calls/' + callId);
     await callRef.set({
-      deptoId: n, status: 'ringing',
+      deptoId: String(n), status: 'ringing',
       timestamp: firebase.database.ServerValue.TIMESTAMP
     });
     setEstado('Llamando...');
