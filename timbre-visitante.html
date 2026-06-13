@@ -252,6 +252,19 @@ async function iniciarLlamada(n) {
       if (e.candidate && callRef) callRef.child('visitorCandidates').push(e.candidate.toJSON());
     };
 
+    pc.oniceconnectionstatechange = function() {
+      const s = pc.iceConnectionState;
+      if (s === 'connected' || s === 'completed') {
+        llamadaConectada = true;
+        setEstado('');
+        document.getElementById('llamando-sub').textContent = 'Conectado al depto';
+      }
+      if (s === 'failed') {
+        if (pc && pc.restartIce) { pc.restartIce(); setEstado('Reconectando...'); }
+        else { colgar(); toast('Error de conexión'); }
+      }
+    };
+
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
     await callRef.update({ offer: { type: offer.type, sdp: offer.sdp } });

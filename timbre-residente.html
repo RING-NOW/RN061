@@ -537,6 +537,14 @@ async function atender() {
       if (e.candidate) callRef.child('residentCandidates').push(e.candidate.toJSON());
     };
 
+    pc.oniceconnectionstatechange = function() {
+      const s = pc.iceConnectionState;
+      if (s === 'failed') {
+        if (pc && pc.restartIce) pc.restartIce();
+        else colgar();
+      }
+    };
+
     const snap = await callRef.once('value');
     const data = snap.val();
     if (!data || !data.offer) throw new Error('Sin oferta del visitante');
