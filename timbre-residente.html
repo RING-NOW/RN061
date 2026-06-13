@@ -513,7 +513,9 @@ async function atender() {
   if (audioCtx) { try { audioCtx.close(); } catch(e) {} audioCtx = null; }
 
   try {
+    document.getElementById('llamada-estado').textContent = 'Obteniendo micrófono...';
     micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    document.getElementById('llamada-estado').textContent = 'Creando conexión...';
     pc = new RTCPeerConnection(ICE);
     micStream.getTracks().forEach(function(t) { pc.addTrack(t, micStream); });
 
@@ -539,16 +541,22 @@ async function atender() {
 
     pc.oniceconnectionstatechange = function() {
       const s = pc.iceConnectionState;
+      document.getElementById('llamada-estado').textContent = 'ICE: ' + s;
+      if (s === 'connected' || s === 'completed') {
+        document.getElementById('llamada-estado').textContent = '';
+      }
       if (s === 'failed') {
         if (pc && pc.restartIce) pc.restartIce();
         else colgar();
       }
     };
 
+    document.getElementById('llamada-estado').textContent = 'Leyendo oferta...';
     const snap = await callRef.once('value');
     const data = snap.val();
     if (!data || !data.offer) throw new Error('Sin oferta del visitante');
 
+    document.getElementById('llamada-estado').textContent = 'Procesando oferta...';
     await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
 
     if (data.visitorCandidates) {
@@ -561,9 +569,12 @@ async function atender() {
       if (s.val() && pc) try { await pc.addIceCandidate(new RTCIceCandidate(s.val())); } catch(e) {}
     });
 
+    document.getElementById('llamada-estado').textContent = 'Creando respuesta...';
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
+    document.getElementById('llamada-estado').textContent = 'Enviando respuesta...';
     await callRef.update({ answer: { type: answer.type, sdp: answer.sdp }, status: 'active' });
+    document.getElementById('llamada-estado').textContent = 'Conectando...';
 
   } catch(err) {
     document.getElementById('llamada-estado').textContent = 'Error: ' + err.message;
