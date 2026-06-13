@@ -450,6 +450,7 @@ function procesarLlamada(snap) {
   const call = snap.val();
   if (!call || call.status !== 'ringing') return;
   if (Date.now() - (call.timestamp || 0) > 90000) return;
+  if (callRef) return; // ya hay una llamada en curso
   callRef = db.ref('calls/' + snap.key);
   mostrarLlamadaEntrante();
 }
