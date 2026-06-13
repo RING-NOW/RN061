@@ -464,6 +464,8 @@ function mostrarLlamadaEntrante() {
   document.getElementById('btn-colgar').style.display = 'none';
   document.getElementById('ring-flash').style.display = 'block';
   document.getElementById('llamada-estado').textContent = '';
+  const incomingScreen = document.getElementById('incoming-screen');
+  if (incomingScreen) incomingScreen.style.display = 'flex';
 
   if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
     navigator.serviceWorker.ready.then(function(reg) {
