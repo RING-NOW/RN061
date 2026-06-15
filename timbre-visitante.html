@@ -29,12 +29,10 @@
     display: flex;
     flex-direction: column;
   }
-  .ringnow-header { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 24px; }
-  .ringnow-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 5px; color: rgba(255,210,80,0.5); text-transform: uppercase; }
-  .ringnow-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,210,80,0.35); }
+  .ringnow-header { display: none; }
   .direccion { text-align: center; margin-bottom: 40px; }
-  .direccion-etiqueta { font-size: 9px; font-weight: 600; letter-spacing: 4px; color: rgba(30,15,0,0.45); text-transform: uppercase; margin-bottom: 6px; }
-  .direccion-texto { font-size: 20px; font-weight: 700; letter-spacing: 3px; color: #2a1800; text-shadow: 0 1px 0 rgba(255,200,50,0.3); text-transform: uppercase; }
+  .direccion-etiqueta { display: none; }
+  .direccion-texto { font-size: 20px; font-weight: 700; letter-spacing: 3px; color: rgba(30,15,0,0.55); text-shadow: 0 1px 0 rgba(255,200,50,0.2), 0 -1px 0 rgba(0,0,0,0.25); text-transform: uppercase; }
   .direccion-linea { width: 40px; height: 1px; background: rgba(0,0,0,0.2); margin: 10px auto 0; }
   .timbres-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 12px; margin-bottom: 36px; padding: 0 4px; flex: 1; }
   .timbre { display: flex; flex-direction: column; align-items: center; gap: 7px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
@@ -45,11 +43,11 @@
     position: relative; transition: transform 0.1s, box-shadow 0.1s; -webkit-tap-highlight-color: transparent;
   }
   .timbre-boton:active { transform: scale(0.90); box-shadow: inset 0 3px 7px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.3); }
-  .timbre-num { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; color: #2a1800; }
+  .timbre-num { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; color: rgba(30,15,0,0.55); text-shadow: 0 1px 0 rgba(255,200,50,0.15); }
   .footer { margin-top: auto; }
-  .aviso-grabado { border-top: 1px solid rgba(0,0,0,0.2); padding-top: 14px; margin-bottom: 12px; }
-  .aviso-texto { font-size: 9px; line-height: 1.65; color: rgba(30,15,0,0.6); text-align: center; }
-  .ringnow-footer { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 4px; color: rgba(30,15,0,0.3); text-transform: uppercase; padding-bottom: 4px; }
+  .aviso-grabado { border-top: 1px solid rgba(0,0,0,0.2); padding-top: 10px; margin-bottom: 8px; }
+  .aviso-texto { font-size: 8px; line-height: 1.45; color: rgba(30,15,0,0.45); text-align: justify; }
+  .ringnow-footer { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 4px; color: rgba(30,15,0,0.25); text-transform: uppercase; padding-bottom: 4px; }
   #diag-box { text-align: center; font-size: 10px; letter-spacing: 2px; color: rgba(30,15,0,0.45); margin-bottom: 12px; min-height: 16px; }
 
   /* ── PANTALLA LLAMADA ── */
@@ -84,13 +82,7 @@
 
 <!-- PLACA -->
 <div id="pantalla-placa">
-  <div class="ringnow-header">
-    <div class="ringnow-dot"></div>
-    <div class="ringnow-logo">RingNow</div>
-    <div class="ringnow-dot"></div>
-  </div>
   <div class="direccion">
-    <div class="direccion-etiqueta">Portero Digital</div>
     <div class="direccion-texto" id="txt-direccion">—</div>
     <div class="direccion-linea"></div>
   </div>
