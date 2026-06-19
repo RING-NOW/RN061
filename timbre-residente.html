@@ -30,7 +30,6 @@
     padding: 20px 16px;
   }
 
-  /* DIAGNÓSTICO */
   #diag-box {
     width: 100%; max-width: 380px;
     background: #0d1117; border: 1px solid #30363d;
@@ -42,14 +41,12 @@
   .d-err { color: #f85149; }
   .d-wai { color: #d29922; }
 
-  /* STANDBY */
   #pantalla-standby {
     display: none; flex-direction: column;
     align-items: center; gap: 20px;
     width: 100%; max-width: 380px; text-align: center;
   }
 
-  /* CONFIG DEPTO (primera vez) */
   #pantalla-config {
     display: none; flex-direction: column;
     align-items: center; gap: 20px;
@@ -71,7 +68,6 @@
   }
   .btn-activar:active { transform: scale(.97); }
 
-  /* LLAMADA PANTALLA COMPLETA */
   #pantalla-llamada {
     display: none; flex-direction: column; align-items: center; justify-content: space-between;
     width: 100%; height: 100vh;
@@ -140,7 +136,6 @@
     letter-spacing: 1px; z-index: 10;
   }
 
-  /* MARCA RINGNOW */
   .ringnow-badge {
     font-size: 10px; font-weight: 700; letter-spacing: 4px;
     color: rgba(255,255,255,0.12); text-transform: uppercase;
@@ -161,7 +156,6 @@
 </head>
 <body>
 
-<!-- DIAGNÓSTICO -->
 <div id="diag-box">
   <div class="dl d-wai" id="d1">⏳ Cargando Firebase SDK...</div>
   <div class="dl d-wai" id="d2">⏳ Inicializando app...</div>
@@ -169,15 +163,13 @@
   <div class="dl d-wai" id="d4">⏳ Detectando departamento...</div>
 </div>
 
-<!-- CONFIG (primera vez) -->
 <div id="pantalla-config">
   <div class="config-titulo">Configurar Depto</div>
   <div class="config-desc">Ingresá el número de tu departamento para recibir llamadas del portero digital.</div>
-  <input type="number" class="input-depto" id="input-depto" placeholder="5" min="1" max="999">
+  <input type="number" class="input-depto" id="input-depto" placeholder="5" min="0" max="999">
   <button class="btn-activar" onclick="configurarDepto()">Activar Portero</button>
 </div>
 
-<!-- STANDBY -->
 <div id="pantalla-standby" style="display:none;">
   <div id="standby-espera" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;padding:40px;text-align:center;">
     <div style="font-size:48px;">🔔</div>
@@ -199,7 +191,6 @@
   </div>
 </div>
 
-<!-- LLAMADA -->
 <div id="pantalla-llamada">
   <div class="ring-flash" id="ring-flash"></div>
   <video id="video-visitante" autoplay playsinline muted></video>
@@ -237,11 +228,9 @@
 <div id="toast"></div>
 
 <script>
-// Aplicar config
 document.getElementById('ot-edificio').textContent = RINGNOW_CONFIG.edificio.nombre;
 </script>
 
-<!-- Firebase con fallback CDN -->
 <script>
 window.addEventListener('load', function() {
   function tryLoad(urls, idx, onSuccess, onFail) {
@@ -325,7 +314,7 @@ function detectarDepto() {
   const paramDepto = params.get('depto');
   const paramCallId = params.get('callId');
 
-  if (paramDepto) {
+  if (paramDepto !== null) {
     d('d4','ok','Depto detectado por URL: ' + paramDepto);
     if (paramCallId) pendingCallId = paramCallId;
     activarDepto(paramDepto);
@@ -333,7 +322,7 @@ function detectarDepto() {
   }
 
   const guardado = localStorage.getItem('portero_depto');
-  if (guardado) {
+  if (guardado !== null) {
     d('d4','ok','Depto detectado por memoria: ' + guardado);
     activarDepto(guardado);
     return;
@@ -346,7 +335,7 @@ function detectarDepto() {
 
 function configurarDepto() {
   const val = document.getElementById('input-depto').value.trim();
-  if (!val) { toast('Ingresá un número válido'); return; }
+  if (val === '') { toast('Ingresá un número válido'); return; }
   activarDepto(val);
 }
 
@@ -362,10 +351,13 @@ function activarDepto(n) {
   miDepto = n;
   localStorage.setItem('portero_depto', n);
 
-  let canal = localStorage.getItem('portero_canal_' + n);
+  let canal = (RINGNOW_CONFIG.canalesNtfy && RINGNOW_CONFIG.canalesNtfy[n]);
   if (!canal) {
-    canal = generarCanalNtfy(n);
-    localStorage.setItem('portero_canal_' + n, canal);
+    canal = localStorage.getItem('portero_canal_' + n);
+    if (!canal) {
+      canal = generarCanalNtfy(n);
+      localStorage.setItem('portero_canal_' + n, canal);
+    }
   }
   db.ref('canales/depto' + n).set({ canal: canal });
 
@@ -391,10 +383,6 @@ function registrarSW(depto) {
     if (permiso !== 'granted') return;
     const swURL = RINGNOW_CONFIG.baseURL.replace('https://ring-now.github.io', '') + '/sw.js';
     const scope  = RINGNOW_CONFIG.baseURL.replace('https://ring-now.github.io', '') + '/';
-    navigator.serviceWorker.register(swURL, { scope: scope })
-      .then(function(reg2) { return reg2; })
-      .catch(function(){});
-    // pass config
     navigator.serviceWorker.register(swURL, { scope: scope })
       .then(function(reg) {
         function enviarDepto(worker) {
@@ -450,7 +438,7 @@ function procesarLlamada(snap) {
   const call = snap.val();
   if (!call || call.status !== 'ringing') return;
   if (Date.now() - (call.timestamp || 0) > 90000) return;
-  if (callRef) return; // ya hay una llamada en curso
+  if (callRef) return;
   callRef = db.ref('calls/' + snap.key);
   mostrarLlamadaEntrante();
 }
