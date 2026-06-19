@@ -188,12 +188,12 @@
       Timbre activo
     </div>
     <style>@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }</style>
-    <div style="margin-top:20px;padding:16px;background:rgba(255,255,255,0.05);border-radius:12px;width:100%;">
-      <div style="font-size:12px;color:var(--suave);margin-bottom:8px;">Para recibir llamadas instalá <strong>ntfy</strong> y suscribite al canal:</div>
-      <div id="standby-canal" style="font-size:13px;font-weight:700;color:var(--oro);letter-spacing:1px;word-break:break-all;">—</div>
-      <div style="font-size:11px;color:var(--suave);margin-top:6px;">Hacé esto una sola vez. Todos en el depto pueden suscribirse al mismo canal.</div>
+    <div style="margin-top:20px;padding:18px 16px;background:rgba(255,255,255,0.05);border-radius:12px;width:100%;">
+      <div style="font-size:12px;color:var(--suave);margin-bottom:12px;">Un último paso para recibir las llamadas en tu celular:</div>
+      <a id="standby-ntfy-link" href="#" target="_blank" style="display:block;background:#C9A84C;color:#111;border-radius:10px;padding:12px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:8px;">📲 Activar notificaciones</a>
+      <div style="font-size:11px;color:#555;line-height:1.5;">Te va a pedir instalar la app gratuita <strong>ntfy</strong> (solo la primera vez) y suscribirte automáticamente. Después cerrá esta página, no hace falta dejarla abierta.</div>
     </div>
-    <button onclick="window.close()" style="margin-top:8px;padding:12px 28px;background:#C9A84C;color:#111;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">Cerrar</button>
+    <button onclick="window.close()" style="margin-top:8px;padding:12px 28px;background:transparent;border:1px solid #333;color:var(--suave);border-radius:12px;font-size:13px;cursor:pointer;">Cerrar</button>
     <button onclick="cambiarDepto()" style="margin-top:4px;background:none;border:none;color:#444;font-size:12px;cursor:pointer;text-decoration:underline;">Cambiar departamento</button>
     <div style="margin-top:16px;font-size:10px;font-weight:700;letter-spacing:4px;color:rgba(255,255,255,0.1);text-transform:uppercase;">RINGNOW</div>
   </div>
@@ -371,7 +371,7 @@ function activarDepto(n) {
 
   document.getElementById('pantalla-config').style.display = 'none';
   document.getElementById('standby-num').textContent = n;
-  document.getElementById('standby-canal').textContent = canal;
+  document.getElementById('standby-ntfy-link').href = 'https://ntfy.sh/' + canal + '?action=subscribe';
   if (!abrioDesdeNotificacion) {
     document.getElementById('pantalla-standby').style.display = 'flex';
   }
