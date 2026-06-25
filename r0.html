@@ -156,7 +156,7 @@
 <div id="pantalla-onboarding">
   <div class="ob-header">
     <div class="ob-depto-label">Portero Digital — Depto</div>
-    <div class="ob-depto-num">PB</div>
+    <div class="ob-depto-num">0</div>
     <div class="ob-edificio" id="ob-edificio">—</div>
   </div>
   <div class="ob-steps">
@@ -193,7 +193,7 @@
 <div id="pantalla-standby">
   <div class="sb-icon">🔔</div>
   <div class="sb-titulo">Portero Digital</div>
-  <div class="sb-depto">Depto <strong>PB</strong></div>
+  <div class="sb-depto">Depto <strong>0</strong></div>
   <div class="sb-estado">
     <div class="sb-dot"></div>
     Timbre activo
@@ -243,7 +243,7 @@
 <script>
 const DEPTO = 0;
 const CANAL = 'rn-rn061-d0-qi3xl5';
-const LABEL = 'PB';
+const LABEL = '0';
 document.getElementById('ot-edificio').textContent = RINGNOW_CONFIG ? RINGNOW_CONFIG.edificio.nombre : '';
 if (document.getElementById('ob-edificio')) document.getElementById('ob-edificio').textContent = RINGNOW_CONFIG ? RINGNOW_CONFIG.edificio.nombre : '';
 </script>
