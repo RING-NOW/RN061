@@ -36,38 +36,58 @@
   .ob-depto-num {{ font-family: 'Bebas Neue', sans-serif; font-size: 72px; color: var(--oro); line-height: 1; }}
   .ob-edificio {{ font-size: 12px; color: #444; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }}
 
-  .ob-steps {{ width: 100%; padding: 24px 0; display: flex; flex-direction: column; gap: 20px; }}
+  .ob-steps {{ width: 100%; padding: 28px 0 8px; display: flex; flex-direction: column; gap: 24px; }}
   .ob-step {{ display: flex; align-items: flex-start; gap: 16px; }}
   .ob-step-num {{
     min-width: 32px; height: 32px; border-radius: 50%;
     background: #222; border: 1px solid #333;
     display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 600; color: var(--oro); flex-shrink: 0;
+    font-size: 13px; font-weight: 600; color: var(--oro); flex-shrink: 0; margin-top: 2px;
   }}
-  .ob-step-body {{ flex: 1; padding-top: 5px; }}
+  .ob-step-body {{ flex: 1; }}
   .ob-step-title {{ font-size: 15px; font-weight: 600; color: var(--texto); margin-bottom: 3px; }}
-  .ob-step-desc {{ font-size: 13px; color: var(--suave); line-height: 1.5; }}
+  .ob-step-desc {{ font-size: 13px; color: var(--suave); line-height: 1.55; }}
+  .ob-step-desc strong {{ color: #aaa; font-weight: 600; }}
 
-  .ob-btn-ntfy {{
-    display: block; width: 100%;
-    background: var(--oro); color: #111;
+  .ob-btn-notif {{
+    width: 100%; background: var(--oro); color: #111;
     border: none; border-radius: 14px;
-    padding: 16px; font-size: 16px; font-weight: 700;
-    cursor: pointer; text-decoration: none; text-align: center;
-    margin-top: 4px; transition: opacity .2s;
+    padding: 18px; font-size: 17px; font-weight: 700;
+    cursor: pointer; margin-top: 28px;
+    transition: opacity .2s;
   }}
-  .ob-btn-ntfy:active {{ opacity: .85; }}
+  .ob-btn-notif:active {{ opacity: .85; }}
+  .ob-btn-notif:disabled {{ opacity: .4; cursor: default; }}
+
+  .ob-status {{
+    margin-top: 14px; font-size: 13px; color: var(--suave);
+    text-align: center; min-height: 20px; line-height: 1.5;
+  }}
+  .ob-status.ok {{ color: var(--verde); }}
+  .ob-status.err {{ color: #e74c3c; }}
 
   .ob-btn-listo {{
     width: 100%; background: transparent;
-    border: 1px solid #333; border-radius: 14px;
+    border: 1px solid #2a2a2a; border-radius: 14px;
     color: var(--suave); padding: 14px;
-    font-size: 14px; cursor: pointer; margin-top: 8px;
-    transition: border-color .2s;
+    font-size: 14px; cursor: pointer; margin-top: 10px;
+    transition: border-color .2s; display: none;
   }}
+  .ob-btn-listo.visible {{ display: block; }}
   .ob-btn-listo:active {{ border-color: var(--oro); }}
 
-  .ob-footer {{ font-size: 10px; letter-spacing: 4px; color: #2a2a2a; text-transform: uppercase; margin-top: 24px; padding-bottom: 8px; }}
+  .ob-ntfy-link {{
+    margin-top: 24px; padding-top: 20px;
+    border-top: 1px solid #1a1a1a;
+    width: 100%; text-align: center;
+  }}
+  .ob-ntfy-label {{ font-size: 11px; color: #333; letter-spacing: 1px; margin-bottom: 10px; }}
+  .ob-ntfy-btn {{
+    display: inline-block; font-size: 12px; color: #444;
+    text-decoration: underline; cursor: pointer; background: none; border: none;
+  }}
+
+  .ob-footer {{ font-size: 10px; letter-spacing: 4px; color: #222; text-transform: uppercase; margin-top: 32px; padding-bottom: 8px; }}
 
   /* STANDBY */
   #pantalla-standby {{
@@ -83,14 +103,17 @@
   }}
   .sb-dot {{ width: 8px; height: 8px; border-radius: 50%; background: var(--verde); animation: blink 2s infinite; }}
   @keyframes blink {{ 0%,100%{{opacity:1}} 50%{{opacity:.3}} }}
-  .sb-btn-notif {{
-    display: block; width: 100%; max-width: 280px;
-    background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px;
-    color: var(--suave); padding: 12px 16px; font-size: 13px;
-    cursor: pointer; text-decoration: none; text-align: center; margin-top: 8px;
+  .sb-notif-status {{
+    font-size: 12px; color: #333; margin-top: 8px;
   }}
-  .sb-cambiar {{ background: none; border: none; color: #333; font-size: 12px; cursor: pointer; text-decoration: underline; margin-top: 4px; }}
-  .sb-footer {{ font-size: 10px; letter-spacing: 4px; color: #2a2a2a; text-transform: uppercase; margin-top: 20px; }}
+  .sb-btn-ntfy {{
+    display: inline-block; margin-top: 16px;
+    background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px;
+    color: var(--suave); padding: 10px 16px; font-size: 12px;
+    cursor: pointer; text-decoration: none; text-align: center;
+  }}
+  .sb-cambiar {{ background: none; border: none; color: #2a2a2a; font-size: 11px; cursor: pointer; text-decoration: underline; margin-top: 12px; display: block; }}
+  .sb-footer {{ font-size: 10px; letter-spacing: 4px; color: #222; text-transform: uppercase; margin-top: 24px; }}
 
   /* LLAMADA */
   #pantalla-llamada {{
@@ -106,7 +129,6 @@
     0%,100%{{box-shadow:0 0 0 8px rgba(39,174,96,.2)}}
     50%{{box-shadow:0 0 0 16px rgba(39,174,96,.1)}}
   }}
-  @keyframes fadeUp {{ from{{opacity:0;transform:translateY(20px)}} to{{opacity:1;transform:translateY(0)}} }}
   #video-visitante {{ width:100%;height:100%;object-fit:cover;position:absolute;inset:0;background:#111; }}
   .ring-flash {{ position:absolute;inset:0;z-index:5;pointer-events:none;animation:flash 1s ease-in-out infinite; }}
   @keyframes flash {{ 0%,100%{{box-shadow:inset 0 0 0 0 rgba(201,168,76,0)}} 50%{{box-shadow:inset 0 0 80px 20px rgba(201,168,76,.15)}} }}
@@ -136,10 +158,8 @@
   .btn-label {{ font-size:12px;color:#8ab4d4;margin-top:10px; }}
   .ringnow-badge {{ font-size:10px;font-weight:700;letter-spacing:4px;color:rgba(255,255,255,0.12);text-transform:uppercase;position:absolute;bottom:16px;left:0;right:0;text-align:center;z-index:10; }}
 
-  /* DIAG */
   #diag-box {{ width:100%;max-width:380px;background:#0d1117;border:1px solid #30363d;border-radius:10px;padding:16px 18px;font-family:monospace;font-size:12px;margin-bottom:16px; }}
   .dl {{ margin:3px 0; }} .d-ok{{color:#3fb950}} .d-err{{color:#f85149}} .d-wai{{color:#d29922}}
-
   #toast {{ position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:var(--texto);padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:all .3s;pointer-events:none;z-index:200; }}
   #toast.visible {{ opacity:1;transform:translateX(-50%) translateY(0); }}
 </style>
@@ -152,40 +172,49 @@
   <div class="dl d-wai" id="d3">⏳ Conectando...</div>
 </div>
 
-<!-- ONBOARDING (primera vez) -->
+<!-- ONBOARDING -->
 <div id="pantalla-onboarding">
   <div class="ob-header">
     <div class="ob-depto-label">Portero Digital — Depto</div>
     <div class="ob-depto-num">8</div>
     <div class="ob-edificio" id="ob-edificio">—</div>
   </div>
+
   <div class="ob-steps">
     <div class="ob-step">
       <div class="ob-step-num">1</div>
       <div class="ob-step-body">
         <div class="ob-step-title">Activá las notificaciones</div>
-        <div class="ob-step-desc">Tocá el botón de abajo para instalar la app <strong>ntfy</strong> (gratis) y suscribirte a tu timbre.</div>
+        <div class="ob-step-desc">Tocá el botón de abajo. El celular te va a preguntar si querés recibir notificaciones — tocá <strong>Permitir</strong>.</div>
       </div>
     </div>
-    <a class="ob-btn-ntfy" href="https://ntfy.sh/rn-rn061-d8-90iwwi?action=subscribe" target="_blank">
-      🔔 Activar mi timbre
-    </a>
     <div class="ob-step">
       <div class="ob-step-num">2</div>
       <div class="ob-step-body">
-        <div class="ob-step-title">Aceptá el permiso de micrófono</div>
-        <div class="ob-step-desc">Cuando el navegador lo pida, tocá <strong>Permitir</strong> para poder hablar con quien llama.</div>
+        <div class="ob-step-title">Permitir el micrófono</div>
+        <div class="ob-step-desc">Si el navegador te lo pide, tocá <strong>Permitir</strong> también — lo necesitás para hablar cuando alguien llame.</div>
       </div>
     </div>
     <div class="ob-step">
       <div class="ob-step-num">3</div>
       <div class="ob-step-body">
-        <div class="ob-step-title">¡Listo! Ya podés cerrar esta página</div>
-        <div class="ob-step-desc">Cuando alguien toque tu timbre vas a recibir una notificación. No hace falta dejar la página abierta.</div>
+        <div class="ob-step-title">Listo — cerrá esta página</div>
+        <div class="ob-step-desc">No hace falta dejarla abierta. Cuando alguien toque tu timbre, te llega la notificación directamente.</div>
       </div>
     </div>
   </div>
-  <button class="ob-btn-listo" onclick="marcarListo()">Ya activé las notificaciones →</button>
+
+  <button class="ob-btn-notif" id="btn-activar" onclick="activarNotificaciones()">
+    🔔 Activar mi timbre
+  </button>
+  <div class="ob-status" id="ob-status"></div>
+  <button class="ob-btn-listo" id="btn-listo" onclick="marcarListo()">Ya está, ir al timbre →</button>
+
+  <div class="ob-ntfy-link">
+    <div class="ob-ntfy-label">¿QUERÉS ACTIVARLO EN OTRO CELULAR TAMBIÉN?</div>
+    <a class="ob-ntfy-btn" href="https://ntfy.sh/rn-rn061-d8-90iwwi?action=subscribe" target="_blank">Usar la app ntfy (avanzado)</a>
+  </div>
+
   <div class="ob-footer">RINGNOW</div>
 </div>
 
@@ -198,8 +227,9 @@
     <div class="sb-dot"></div>
     Timbre activo
   </div>
-  <a class="sb-btn-notif" href="https://ntfy.sh/rn-rn061-d8-90iwwi?action=subscribe" target="_blank">
-    📲 Activar notificaciones en otro celular
+  <div class="sb-notif-status" id="sb-notif-status"></div>
+  <a class="sb-btn-ntfy" href="https://ntfy.sh/rn-rn061-d8-90iwwi?action=subscribe" target="_blank">
+    📲 Activar en otro celular (ntfy)
   </a>
   <button class="sb-cambiar" onclick="resetOnboarding()">Reconfigurar</button>
   <div class="sb-footer">RINGNOW</div>
@@ -213,7 +243,7 @@
   <audio id="audio-visitante" autoplay playsinline></audio>
 
   <div id="incoming-screen">
-    <div style="display:flex;flex-direction:column;align-items:center;gap:20px;width:100%;animation:fadeUp .5s .1s ease both;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:20px;width:100%;">
       <div id="llamada-estado"></div>
       <div id="btns-entrante" style="display:flex;gap:56px;align-items:center;">
         <div style="display:flex;flex-direction:column;align-items:center;">
@@ -244,8 +274,10 @@
 const DEPTO = 8;
 const CANAL = 'rn-rn061-d8-90iwwi';
 const LABEL = '8';
-document.getElementById('ot-edificio').textContent = RINGNOW_CONFIG ? RINGNOW_CONFIG.edificio.nombre : '';
-if (document.getElementById('ob-edificio')) document.getElementById('ob-edificio').textContent = RINGNOW_CONFIG ? RINGNOW_CONFIG.edificio.nombre : '';
+if (RINGNOW_CONFIG) {{
+  if (document.getElementById('ot-edificio')) document.getElementById('ot-edificio').textContent = RINGNOW_CONFIG.edificio.nombre;
+  if (document.getElementById('ob-edificio')) document.getElementById('ob-edificio').textContent = RINGNOW_CONFIG.edificio.nombre;
+}}
 </script>
 
 <script>
@@ -293,27 +325,21 @@ function sdkListo() {{
   db.ref('.info/connected').on('value', function(snap) {{
     if (snap.val()) {{ d('d3','ok','Conectado ✓'); arrancar(); }}
   }});
-  setTimeout(function() {{ if (!db) return; d('d3','ok','OK'); arrancar(); }}, 8000);
+  setTimeout(function() {{ if (db) {{ d('d3','ok','OK'); arrancar(); }} }}, 8000);
 }}
 
 function arrancar() {{
   // Registrar canal en Firebase
   db.ref('canales/depto' + DEPTO).set({{ canal: CANAL }});
 
-  // Pedir permiso de micrófono
+  // Pedir permiso de micrófono silenciosamente
   navigator.mediaDevices.getUserMedia({{ audio: true, video: false }})
     .then(function(s) {{ s.getTracks().forEach(function(t){{ t.stop(); }}); }})
     .catch(function(){{}});
 
-  // Registrar SW
-  registrarSW();
-
-  // ¿Primera vez?
-  const listo = localStorage.getItem('rn_listo_' + DEPTO);
   ocultarDiag();
 
   if (callIdParam) {{
-    // Vino desde notificación
     escuchar();
     var cref = db.ref('calls/' + callIdParam);
     cref.once('value').then(function(snap) {{
@@ -323,39 +349,127 @@ function arrancar() {{
       callRef = cref;
       mostrarLlamadaEntrante();
     }});
-  }} else if (!listo) {{
+    return;
+  }}
+
+  const listo = localStorage.getItem('rn_listo_' + DEPTO);
+  if (!listo) {{
     document.getElementById('pantalla-onboarding').style.display = 'flex';
-    escuchar();
+    // Verificar si ya tiene permiso
+    if ('Notification' in window && Notification.permission === 'granted') {{
+      setStatus('ok', '✅ Notificaciones ya activadas');
+      document.getElementById('btn-activar').textContent = '✅ Notificaciones activas';
+      document.getElementById('btn-activar').disabled = true;
+      document.getElementById('btn-listo').classList.add('visible');
+      registrarSW();
+    }}
   }} else {{
     document.getElementById('pantalla-standby').style.display = 'flex';
-    escuchar();
+    mostrarEstadoNotif();
   }}
+  escuchar();
+}}
+
+async function activarNotificaciones() {{
+  const btn = document.getElementById('btn-activar');
+  btn.disabled = true;
+  btn.textContent = 'Activando...';
+
+  if (!('Notification' in window)) {{
+    setStatus('err', 'Tu navegador no soporta notificaciones. Probá con Chrome.');
+    btn.textContent = '🔔 Activar mi timbre';
+    btn.disabled = false;
+    return;
+  }}
+
+  if (Notification.permission === 'denied') {{
+    setStatus('err', 'Bloqueaste las notificaciones. Andá a Configuración del navegador → Notificaciones → Permitir para este sitio.');
+    btn.textContent = '🔔 Activar mi timbre';
+    btn.disabled = false;
+    return;
+  }}
+
+  try {{
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted') {{
+      await registrarSW();
+      btn.textContent = '✅ Notificaciones activas';
+      setStatus('ok', '¡Listo! Ya vas a recibir las llamadas.');
+      document.getElementById('btn-listo').classList.add('visible');
+    }} else {{
+      setStatus('err', 'No diste permiso. Necesitás tocar "Permitir" para recibir las llamadas.');
+      btn.textContent = '🔔 Intentar de nuevo';
+      btn.disabled = false;
+    }}
+  }} catch(e) {{
+    setStatus('err', 'Ocurrió un error. Intentá de nuevo.');
+    btn.textContent = '🔔 Activar mi timbre';
+    btn.disabled = false;
+  }}
+}}
+
+function setStatus(tipo, msg) {{
+  const el = document.getElementById('ob-status');
+  el.textContent = msg;
+  el.className = 'ob-status' + (tipo ? ' ' + tipo : '');
 }}
 
 function marcarListo() {{
   localStorage.setItem('rn_listo_' + DEPTO, '1');
   document.getElementById('pantalla-onboarding').style.display = 'none';
   document.getElementById('pantalla-standby').style.display = 'flex';
+  mostrarEstadoNotif();
+}}
+
+function mostrarEstadoNotif() {{
+  const el = document.getElementById('sb-notif-status');
+  if (!el) return;
+  if ('Notification' in window && Notification.permission === 'granted') {{
+    el.textContent = '✅ Notificaciones activas';
+    el.style.color = '#27ae60';
+    registrarSW();
+  }} else {{
+    el.textContent = '⚠️ Notificaciones no activadas';
+    el.style.color = '#666';
+  }}
 }}
 
 function resetOnboarding() {{
   localStorage.removeItem('rn_listo_' + DEPTO);
   document.getElementById('pantalla-standby').style.display = 'none';
+  document.getElementById('btn-activar').disabled = false;
+  document.getElementById('btn-activar').textContent = '🔔 Activar mi timbre';
+  document.getElementById('ob-status').textContent = '';
+  document.getElementById('ob-status').className = 'ob-status';
+  document.getElementById('btn-listo').classList.remove('visible');
   document.getElementById('pantalla-onboarding').style.display = 'flex';
+  if ('Notification' in window && Notification.permission === 'granted') {{
+    setStatus('ok', '✅ Notificaciones ya activadas');
+    document.getElementById('btn-activar').textContent = '✅ Notificaciones activas';
+    document.getElementById('btn-activar').disabled = true;
+    document.getElementById('btn-listo').classList.add('visible');
+  }}
 }}
 
 function registrarSW() {{
-  if (!('serviceWorker' in navigator)) return;
-  Notification.requestPermission().then(function(p) {{
-    if (p !== 'granted') return;
+  return new Promise(function(resolve) {{
+    if (!('serviceWorker' in navigator)) {{ resolve(); return; }}
     const base = RINGNOW_CONFIG.baseURL.replace('https://ring-now.github.io', '');
     navigator.serviceWorker.register(base + '/sw.js', {{ scope: base + '/' }})
       .then(function(reg) {{
-        function send(w) {{ w.postMessage({{ type:'WATCH_DEPTO', depto: String(DEPTO), firebaseDB: RINGNOW_CONFIG.firebase.databaseURL, baseURL: RINGNOW_CONFIG.baseURL }}); }}
+        function send(w) {{
+          w.postMessage({{
+            type:'WATCH_DEPTO', depto: String(DEPTO),
+            firebaseDB: RINGNOW_CONFIG.firebase.databaseURL,
+            baseURL: RINGNOW_CONFIG.baseURL
+          }});
+        }}
         if (reg.active) send(reg.active);
-        if (reg.installing) reg.installing.addEventListener('statechange', function() {{ if (this.state==='activated') send(this); }});
-        navigator.serviceWorker.ready.then(function(r) {{ if (r.active) send(r.active); }});
-      }}).catch(function(){{}});
+        if (reg.installing) reg.installing.addEventListener('statechange', function() {{
+          if (this.state==='activated') send(this);
+        }});
+        navigator.serviceWorker.ready.then(function(r) {{ if (r.active) send(r.active); resolve(); }});
+      }}).catch(function(){{ resolve(); }});
   }});
 }}
 
