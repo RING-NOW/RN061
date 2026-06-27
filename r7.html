@@ -370,43 +370,48 @@ function arrancar() {{
   escuchar();
 }}
 
-async function activarNotificaciones() {{
+function activarNotificaciones() {
   const btn = document.getElementById('btn-activar');
-  btn.disabled = true;
-  btn.textContent = 'Activando...';
+  setStatus('', 'Procesando...');
 
-  if (!('Notification' in window)) {{
-    setStatus('err', 'Tu navegador no soporta notificaciones. Probá con Chrome.');
-    btn.textContent = '🔔 Activar mi timbre';
-    btn.disabled = false;
+  if (!('Notification' in window)) {
+    setStatus('err', 'Usá Chrome para activar las notificaciones.');
     return;
-  }}
+  }
 
-  if (Notification.permission === 'denied') {{
-    setStatus('err', 'Bloqueaste las notificaciones. Andá a Configuración del navegador → Notificaciones → Permitir para este sitio.');
-    btn.textContent = '🔔 Activar mi timbre';
-    btn.disabled = false;
+  if (Notification.permission === 'denied') {
+    setStatus('err', 'Notificaciones bloqueadas. Andá a Ajustes del sitio en Chrome → Permitir notificaciones.');
     return;
-  }}
+  }
 
-  try {{
-    const perm = await Notification.requestPermission();
-    if (perm === 'granted') {{
-      await registrarSW();
-      btn.textContent = '✅ Notificaciones activas';
+  if (Notification.permission === 'granted') {
+    registrarSW().then(function() {
+      btn.textContent = '✅ Ya activo'; btn.disabled = true;
       setStatus('ok', '¡Listo! Ya vas a recibir las llamadas.');
       document.getElementById('btn-listo').classList.add('visible');
-    }} else {{
-      setStatus('err', 'No diste permiso. Necesitás tocar "Permitir" para recibir las llamadas.');
+    });
+    return;
+  }
+
+  btn.textContent = 'Esperando...';
+  Notification.requestPermission().then(function(perm) {
+    if (perm === 'granted') {
+      registrarSW().then(function() {
+        btn.textContent = '✅ Notificaciones activas'; btn.disabled = true;
+        setStatus('ok', '¡Listo! Ya vas a recibir las llamadas.');
+        document.getElementById('btn-listo').classList.add('visible');
+      });
+    } else {
+      setStatus('err', 'Tocaste "No permitir". Para activarlo: en Chrome tocá el candado de la URL → Notificaciones → Permitir.');
       btn.textContent = '🔔 Intentar de nuevo';
-      btn.disabled = false;
-    }}
-  }} catch(e) {{
-    setStatus('err', 'Ocurrió un error. Intentá de nuevo.');
+    }
+  }).catch(function(e) {
+    setStatus('err', 'Error: ' + e.message);
     btn.textContent = '🔔 Activar mi timbre';
-    btn.disabled = false;
-  }}
-}}
+  });
+}
+
+function setStatus
 
 function setStatus(tipo, msg) {{
   const el = document.getElementById('ob-status');
