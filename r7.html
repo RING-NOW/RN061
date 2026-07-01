@@ -204,7 +204,16 @@
     </div>
   </div>
 
-  <button class="ob-btn-notif" id="btn-activar" onclick="Notification.requestPermission().then(function(p){onPermiso(p);})">
+  <button class="ob-btn-notif" id="btn-activar" onclick="
+    var el = document.getElementById('ob-status');
+    el.style.display='block';
+    if (!window.Notification) { el.textContent='SIN SOPORTE'; return; }
+    el.textContent = 'Permiso actual: ' + Notification.permission;
+    Notification.requestPermission().then(function(p){
+      el.textContent = 'Resultado: ' + p;
+      onPermiso(p);
+    }).catch(function(e){ el.textContent = 'Error: ' + e; });
+  ">
     🔔 Activar mi timbre
   </button>
   <div class="ob-status" id="ob-status"></div>
