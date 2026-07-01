@@ -204,7 +204,7 @@
     </div>
   </div>
 
-  <button class="ob-btn-notif" id="btn-activar" onclick="activarNotificaciones()">
+  <button class="ob-btn-notif" id="btn-activar" onclick="Notification.requestPermission().then(function(p){onPermiso(p);})">
     🔔 Activar mi timbre
   </button>
   <div class="ob-status" id="ob-status"></div>
@@ -369,6 +369,20 @@ function arrancar() {{
   }}
   escuchar();
 }}
+
+function onPermiso(perm) {
+  const btn = document.getElementById('btn-activar');
+  if (perm === 'granted') {
+    registrarSW().then(function() {
+      btn.textContent = '✅ Notificaciones activas'; btn.disabled = true;
+      setStatus('ok', '¡Listo! Ya vas a recibir las llamadas.');
+      document.getElementById('btn-listo').classList.add('visible');
+    });
+  } else {
+    setStatus('err', 'Necesitás tocar "Permitir" para recibir las llamadas. Intentá de nuevo.');
+    btn.textContent = '🔔 Intentar de nuevo';
+  }
+}
 
 function activarNotificaciones() {
   const btn = document.getElementById('btn-activar');
