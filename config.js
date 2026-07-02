@@ -12,19 +12,14 @@ const RINGNOW_CONFIG = {
     githubUser: "RING-NOW",
   },
 
-  /* ── Estructura de departamentos ──
-     Modo manual: listado exacto de timbres en orden
-     0 = Planta Baja / Encargado
-  */
+  /* ── Estructura de departamentos ── */
   estructura: {
     pisos:         0,
     deptosPorPiso: 0,
     deptosManual:  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0],
   },
 
-  /* ── Canales ntfy fijos por depto ──
-     Se generan una sola vez por edificio. No hace falta tocarlos.
-  */
+  /* ── Canales ntfy fijos por depto ── */
   canalesNtfy: {
     0:  "rn-rn061-d0-qi3xl5",
     1:  "rn-rn061-d1-1visbi",
