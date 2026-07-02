@@ -289,20 +289,8 @@ if (RINGNOW_CONFIG) {
 }
 </script>
 
-<script>
-window.addEventListener('load', function() {
-  function tryLoad(urls, idx, onSuccess, onFail) {
-    if (idx >= urls.length) { onFail(); return; }
-    var s = document.createElement('script');
-    s.src = urls[idx]; s.onload = onSuccess;
-    s.onerror = function() { tryLoad(urls, idx+1, onSuccess, onFail); };
-    document.head.appendChild(s);
-  }
-  tryLoad(['https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js'], 0, function() {
-    tryLoad(['https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js'], 0, sdkListo, sdkError);
-  }, sdkError);
-});
-</script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js" onload="window._appOk=true" onerror="sdkError()"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js" onload="if(window._appOk) sdkListo()" onerror="sdkError()"></script>
 
 <script>
 const ICE = { iceServers: [
