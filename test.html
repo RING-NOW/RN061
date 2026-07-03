@@ -22,11 +22,11 @@ log('1. Página cargada');
 log('2. config.js: ' + (typeof RINGNOW_CONFIG !== 'undefined' ? 'OK' : 'FALLO'), typeof RINGNOW_CONFIG !== 'undefined' ? '#3fb950' : '#f85149');
 </script>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"
   onload="log('3. firebase-app cargado', '#3fb950')"
   onerror="log('3. firebase-app FALLO', '#f85149')">
 </script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"
   onload="initFirebase()"
   onerror="log('4. firebase-db FALLO', '#f85149')">
 </script>
