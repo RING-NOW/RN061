@@ -3,12 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="config.js"></script>
 </head>
 <body style="background:#111;color:#fff;font-family:monospace;padding:20px;">
-
 <div id="log"></div>
-
 <script>
 function log(msg, color) {
   var d = document.createElement('div');
@@ -17,41 +14,35 @@ function log(msg, color) {
   d.textContent = new Date().toISOString().substr(11,8) + ' ' + msg;
   document.getElementById('log').appendChild(d);
 }
+log('1. Pagina cargada');
 
-log('1. Página cargada');
-log('2. config.js: ' + (typeof RINGNOW_CONFIG !== 'undefined' ? 'OK' : 'FALLO'), typeof RINGNOW_CONFIG !== 'undefined' ? '#3fb950' : '#f85149');
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/compat/app/dist/index.js"
-  onload="log('3. firebase-app cargado', '#3fb950')"
-  onerror="log('3. firebase-app FALLO', '#f85149')">
-</script>
-<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/compat/database/dist/index.js"
-  onload="initFirebase()"
-  onerror="log('4. firebase-db FALLO', '#f85149')">
-</script>
-
-<script>
-function initFirebase() {
-  log('4. firebase-database cargado', '#3fb950');
-  try {
-    firebase.initializeApp(RINGNOW_CONFIG.firebase);
-    log('5. initializeApp OK', '#3fb950');
-  } catch(e) {
-    log('5. initializeApp FALLO: ' + e.message, '#f85149');
-    return;
-  }
-  try {
-    var db = firebase.database();
-    log('6. database() OK', '#3fb950');
-    db.ref('.info/connected').on('value', function(snap) {
-      log('7. connected: ' + snap.val(), snap.val() ? '#3fb950' : '#d29922');
-    });
-  } catch(e) {
-    log('6. database() FALLO: ' + e.message, '#f85149');
-  }
+function loadScript(url, cb) {
+  var s = document.createElement('script');
+  s.src = url;
+  s.onload = function() { log('OK: ' + url.split('/').pop(), '#3fb950'); cb(); };
+  s.onerror = function() { log('FALLO: ' + url.split('/').pop(), '#f85149'); };
+  document.head.appendChild(s);
 }
-</script>
 
+loadScript('https://ring-now.github.io/RN061/config.js', function() {
+  log('2. config OK - databaseURL: ' + RINGNOW_CONFIG.firebase.databaseURL, '#3fb950');
+  loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js', function() {
+    loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js', function() {
+      log('3. Todos los SDKs cargados', '#3fb950');
+      try {
+        firebase.initializeApp(RINGNOW_CONFIG.firebase);
+        log('4. initializeApp OK', '#3fb950');
+        var db = firebase.database();
+        log('5. database() OK', '#3fb950');
+        db.ref('.info/connected').on('value', function(snap) {
+          log('6. connected: ' + snap.val(), snap.val() ? '#3fb950' : '#d29922');
+        });
+      } catch(e) {
+        log('ERROR: ' + e.message, '#f85149');
+      }
+    });
+  });
+});
+</script>
 </body>
 </html>
