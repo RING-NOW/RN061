@@ -3,165 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<script src="config.js"></script>
 <meta name="theme-color" content="#C9A84C">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <title>Portero — Depto 3</title>
+<script src="config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {{
-    --oro: #C9A84C; --bg: #111; --panel: #1a1a1a;
-    --texto: #e8e0d0; --suave: #666; --verde: #27ae60; --rojo: #c0392b;
-  }}
-  * {{ margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }}
-  body {{
-    background: var(--bg); color: var(--texto);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; padding: 24px 20px;
-  }}
+  :root { --oro: #C9A84C; --bg: #111; --panel: #1a1a1a; --texto: #e8e0d0; --suave: #666; --verde: #27ae60; --rojo: #c0392b; }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { background:var(--bg); color:var(--texto); font-family:'DM Sans',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px 20px; }
 
-  /* ONBOARDING */
-  #pantalla-onboarding {{
-    display: none; flex-direction: column; align-items: center;
-    width: 100%; max-width: 360px; gap: 0;
-  }}
-  .ob-header {{
-    width: 100%; text-align: center; padding: 32px 0 24px;
-    border-bottom: 1px solid #222;
-  }}
-  .ob-depto-label {{ font-size: 11px; letter-spacing: 4px; color: var(--suave); text-transform: uppercase; margin-bottom: 8px; }}
-  .ob-depto-num {{ font-family: 'Bebas Neue', sans-serif; font-size: 72px; color: var(--oro); line-height: 1; }}
-  .ob-edificio {{ font-size: 12px; color: #444; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }}
+  #diag-box { width:100%; max-width:380px; background:#0d1117; border:1px solid #30363d; border-radius:10px; padding:16px 18px; font-family:monospace; font-size:12px; margin-bottom:16px; }
+  .dl { margin:3px 0; } .d-ok{color:#3fb950} .d-err{color:#f85149} .d-wai{color:#d29922}
 
-  .ob-steps {{ width: 100%; padding: 28px 0 8px; display: flex; flex-direction: column; gap: 24px; }}
-  .ob-step {{ display: flex; align-items: flex-start; gap: 16px; }}
-  .ob-step-num {{
-    min-width: 32px; height: 32px; border-radius: 50%;
-    background: #222; border: 1px solid #333;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 600; color: var(--oro); flex-shrink: 0; margin-top: 2px;
-  }}
-  .ob-step-body {{ flex: 1; }}
-  .ob-step-title {{ font-size: 15px; font-weight: 600; color: var(--texto); margin-bottom: 3px; }}
-  .ob-step-desc {{ font-size: 13px; color: var(--suave); line-height: 1.55; }}
-  .ob-step-desc strong {{ color: #aaa; font-weight: 600; }}
+  #pantalla-onboarding { display:none; flex-direction:column; align-items:center; width:100%; max-width:360px; }
+  .ob-header { width:100%; text-align:center; padding:32px 0 24px; border-bottom:1px solid #222; }
+  .ob-depto-label { font-size:11px; letter-spacing:4px; color:var(--suave); text-transform:uppercase; margin-bottom:8px; }
+  .ob-depto-num { font-family:'Bebas Neue',sans-serif; font-size:72px; color:var(--oro); line-height:1; }
+  .ob-edificio { font-size:12px; color:#444; letter-spacing:2px; text-transform:uppercase; margin-top:4px; }
+  .ob-steps { width:100%; padding:28px 0 8px; display:flex; flex-direction:column; gap:24px; }
+  .ob-step { display:flex; align-items:flex-start; gap:16px; }
+  .ob-step-num { min-width:32px; height:32px; border-radius:50%; background:#222; border:1px solid #333; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; color:var(--oro); flex-shrink:0; margin-top:2px; }
+  .ob-step-body { flex:1; }
+  .ob-step-title { font-size:15px; font-weight:600; color:var(--texto); margin-bottom:3px; }
+  .ob-step-desc { font-size:13px; color:var(--suave); line-height:1.55; }
+  .ob-step-desc strong { color:#aaa; font-weight:600; }
+  .ob-btn-notif { width:100%; background:var(--oro); color:#111; border:none; border-radius:14px; padding:18px; font-size:17px; font-weight:700; cursor:pointer; margin-top:28px; transition:opacity .2s; }
+  .ob-btn-notif:active { opacity:.85; }
+  .ob-status { margin-top:14px; font-size:13px; color:var(--suave); text-align:center; min-height:20px; line-height:1.5; }
+  .ob-status.ok { color:var(--verde); } .ob-status.err { color:#e74c3c; }
+  .ob-btn-listo { width:100%; background:transparent; border:1px solid #2a2a2a; border-radius:14px; color:var(--suave); padding:14px; font-size:14px; cursor:pointer; margin-top:10px; display:none; }
+  .ob-btn-listo.visible { display:block; }
+  .ob-ntfy-link { margin-top:24px; padding-top:20px; border-top:1px solid #1a1a1a; width:100%; text-align:center; }
+  .ob-ntfy-label { font-size:11px; color:#333; letter-spacing:1px; margin-bottom:10px; }
+  .ob-ntfy-btn { display:inline-block; font-size:12px; color:#444; text-decoration:underline; cursor:pointer; background:none; border:none; }
+  .ob-footer { font-size:10px; letter-spacing:4px; color:#222; text-transform:uppercase; margin-top:32px; padding-bottom:8px; }
 
-  .ob-btn-notif {{
-    width: 100%; background: var(--oro); color: #111;
-    border: none; border-radius: 14px;
-    padding: 18px; font-size: 17px; font-weight: 700;
-    cursor: pointer; margin-top: 28px;
-    transition: opacity .2s;
-  }}
-  .ob-btn-notif:active {{ opacity: .85; }}
-  .ob-btn-notif:disabled {{ opacity: .4; cursor: default; }}
+  #pantalla-standby { display:none; flex-direction:column; align-items:center; width:100%; max-width:360px; text-align:center; gap:12px; padding:40px 0; }
+  .sb-dot { width:8px; height:8px; border-radius:50%; background:var(--verde); animation:blink 2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .sb-btn-ntfy { display:inline-block; margin-top:16px; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:10px; color:var(--suave); padding:10px 16px; font-size:12px; cursor:pointer; text-decoration:none; }
+  .sb-cambiar { background:none; border:none; color:#2a2a2a; font-size:11px; cursor:pointer; text-decoration:underline; margin-top:12px; display:block; }
+  .sb-footer { font-size:10px; letter-spacing:4px; color:#222; text-transform:uppercase; margin-top:24px; }
 
-  .ob-status {{
-    margin-top: 14px; font-size: 13px; color: var(--suave);
-    text-align: center; min-height: 20px; line-height: 1.5;
-  }}
-  .ob-status.ok {{ color: var(--verde); }}
-  .ob-status.err {{ color: #e74c3c; }}
-
-  .ob-btn-listo {{
-    width: 100%; background: transparent;
-    border: 1px solid #2a2a2a; border-radius: 14px;
-    color: var(--suave); padding: 14px;
-    font-size: 14px; cursor: pointer; margin-top: 10px;
-    transition: border-color .2s; display: none;
-  }}
-  .ob-btn-listo.visible {{ display: block; }}
-  .ob-btn-listo:active {{ border-color: var(--oro); }}
-
-  .ob-ntfy-link {{
-    margin-top: 24px; padding-top: 20px;
-    border-top: 1px solid #1a1a1a;
-    width: 100%; text-align: center;
-  }}
-  .ob-ntfy-label {{ font-size: 11px; color: #333; letter-spacing: 1px; margin-bottom: 10px; }}
-  .ob-ntfy-btn {{
-    display: inline-block; font-size: 12px; color: #444;
-    text-decoration: underline; cursor: pointer; background: none; border: none;
-  }}
-
-  .ob-footer {{ font-size: 10px; letter-spacing: 4px; color: #222; text-transform: uppercase; margin-top: 32px; padding-bottom: 8px; }}
-
-  /* STANDBY */
-  #pantalla-standby {{
-    display: none; flex-direction: column; align-items: center;
-    width: 100%; max-width: 360px; text-align: center; gap: 12px; padding: 40px 0;
-  }}
-  .sb-icon {{ font-size: 48px; }}
-  .sb-titulo {{ font-size: 20px; font-weight: 700; }}
-  .sb-depto {{ font-size: 14px; color: var(--suave); }}
-  .sb-estado {{
-    display: flex; align-items: center; gap: 8px;
-    font-size: 13px; color: var(--verde); margin-top: 4px;
-  }}
-  .sb-dot {{ width: 8px; height: 8px; border-radius: 50%; background: var(--verde); animation: blink 2s infinite; }}
-  @keyframes blink {{ 0%,100%{{opacity:1}} 50%{{opacity:.3}} }}
-  .sb-notif-status {{
-    font-size: 12px; color: #333; margin-top: 8px;
-  }}
-  .sb-btn-ntfy {{
-    display: inline-block; margin-top: 16px;
-    background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px;
-    color: var(--suave); padding: 10px 16px; font-size: 12px;
-    cursor: pointer; text-decoration: none; text-align: center;
-  }}
-  .sb-cambiar {{ background: none; border: none; color: #2a2a2a; font-size: 11px; cursor: pointer; text-decoration: underline; margin-top: 12px; display: block; }}
-  .sb-footer {{ font-size: 10px; letter-spacing: 4px; color: #222; text-transform: uppercase; margin-top: 24px; }}
-
-  /* LLAMADA */
-  #pantalla-llamada {{
-    display: none; flex-direction: column; align-items: center; justify-content: space-between;
-    width: 100%; height: 100vh;
-    position: fixed; inset: 0; z-index: 50;
-    background: linear-gradient(160deg, #0a1628 0%, #0d2137 40%, #091420 100%);
-    padding: 60px 24px 64px; box-sizing: border-box;
-  }}
-  #pantalla-llamada.entrante {{ animation: entrada 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }}
-  @keyframes entrada {{ from{{opacity:0;transform:scale(1.04)}} to{{opacity:1;transform:scale(1)}} }}
-  @keyframes pulsarVerde {{
-    0%,100%{{box-shadow:0 0 0 8px rgba(39,174,96,.2)}}
-    50%{{box-shadow:0 0 0 16px rgba(39,174,96,.1)}}
-  }}
-  #video-visitante {{ width:100%;height:100%;object-fit:cover;position:absolute;inset:0;background:#111; }}
-  .ring-flash {{ position:absolute;inset:0;z-index:5;pointer-events:none;animation:flash 1s ease-in-out infinite; }}
-  @keyframes flash {{ 0%,100%{{box-shadow:inset 0 0 0 0 rgba(201,168,76,0)}} 50%{{box-shadow:inset 0 0 80px 20px rgba(201,168,76,.15)}} }}
-  .overlay-top {{
-    position:absolute;top:0;left:0;right:0;height:130px;
-    background:linear-gradient(to bottom,rgba(0,0,0,.85),transparent);
-    z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:24px;gap:6px;
-  }}
-  .ot-label {{ font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.5);text-transform:uppercase; }}
-  .ot-edificio {{ font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;letter-spacing:1px; }}
-  .overlay-bottom {{
-    position:absolute;bottom:0;left:0;right:0;height:180px;
-    background:linear-gradient(to top,rgba(0,0,0,.9),transparent);
-    z-index:10;display:flex;align-items:flex-end;justify-content:center;padding-bottom:44px;gap:44px;
-  }}
-  .btn-acc {{ width:68px;height:68px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:28px;transition:transform .15s;box-shadow:0 4px 24px rgba(0,0,0,.5); }}
-  .btn-acc:active {{ transform:scale(.88); }}
-  .btn-verde {{ background:var(--verde);box-shadow:0 4px 24px rgba(39,174,96,.4); }}
-  .btn-rojo  {{ background:var(--rojo);box-shadow:0 4px 24px rgba(192,57,43,.4); }}
-  #incoming-screen {{
-    position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;
-    align-items:center;justify-content:flex-end;padding:0 24px 72px;box-sizing:border-box;
-    background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,transparent 45%);
-  }}
-  #llamada-estado {{ font-size:14px;color:#8ab4d4;letter-spacing:1px;min-height:20px;text-align:center; }}
-  #btns-entrante {{ display:flex;gap:56px;align-items:center; }}
-  .btn-label {{ font-size:12px;color:#8ab4d4;margin-top:10px; }}
-  .ringnow-badge {{ font-size:10px;font-weight:700;letter-spacing:4px;color:rgba(255,255,255,0.12);text-transform:uppercase;position:absolute;bottom:16px;left:0;right:0;text-align:center;z-index:10; }}
-
-  #diag-box {{ width:100%;max-width:380px;background:#0d1117;border:1px solid #30363d;border-radius:10px;padding:16px 18px;font-family:monospace;font-size:12px;margin-bottom:16px; }}
-  .dl {{ margin:3px 0; }} .d-ok{{color:#3fb950}} .d-err{{color:#f85149}} .d-wai{{color:#d29922}}
-  #toast {{ position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:var(--texto);padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:all .3s;pointer-events:none;z-index:200; }}
-  #toast.visible {{ opacity:1;transform:translateX(-50%) translateY(0); }}
+  #pantalla-llamada { display:none; flex-direction:column; align-items:center; justify-content:space-between; width:100%; height:100vh; position:fixed; inset:0; z-index:50; background:linear-gradient(160deg,#0a1628 0%,#0d2137 40%,#091420 100%); padding:60px 24px 64px; box-sizing:border-box; }
+  #pantalla-llamada.entrante { animation:entrada 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+  @keyframes entrada { from{opacity:0;transform:scale(1.04)} to{opacity:1;transform:scale(1)} }
+  @keyframes pulsarVerde { 0%,100%{box-shadow:0 0 0 8px rgba(39,174,96,.2)} 50%{box-shadow:0 0 0 16px rgba(39,174,96,.1)} }
+  #video-visitante { width:100%;height:100%;object-fit:cover;position:absolute;inset:0;background:#111; }
+  .ring-flash { position:absolute;inset:0;z-index:5;pointer-events:none;animation:flash 1s ease-in-out infinite; }
+  @keyframes flash { 0%,100%{box-shadow:inset 0 0 0 0 rgba(201,168,76,0)} 50%{box-shadow:inset 0 0 80px 20px rgba(201,168,76,.15)} }
+  .overlay-bottom { position:absolute;bottom:0;left:0;right:0;height:180px;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);z-index:10;display:flex;align-items:flex-end;justify-content:center;padding-bottom:44px;gap:44px; }
+  .btn-acc { width:68px;height:68px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:28px;transition:transform .15s; }
+  .btn-acc:active { transform:scale(.88); }
+  .btn-verde { background:var(--verde); } .btn-rojo { background:var(--rojo); }
+  #incoming-screen { position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 24px 72px;box-sizing:border-box;background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,transparent 45%); }
+  #llamada-estado { font-size:14px;color:#8ab4d4;letter-spacing:1px;min-height:20px;text-align:center;margin-bottom:20px; }
+  #btns-entrante { display:flex;gap:56px;align-items:center; }
+  .btn-label { font-size:12px;color:#8ab4d4;margin-top:10px;text-align:center; }
+  .ringnow-badge { font-size:10px;font-weight:700;letter-spacing:4px;color:rgba(255,255,255,0.12);text-transform:uppercase;position:absolute;bottom:16px;left:0;right:0;text-align:center;z-index:10; }
+  #toast { position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:var(--texto);padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:all .3s;pointer-events:none;z-index:200; }
+  #toast.visible { opacity:1;transform:translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
@@ -172,14 +77,12 @@
   <div class="dl d-wai" id="d3">⏳ Conectando...</div>
 </div>
 
-<!-- ONBOARDING -->
 <div id="pantalla-onboarding">
   <div class="ob-header">
     <div class="ob-depto-label">Portero Digital — Depto</div>
     <div class="ob-depto-num">3</div>
     <div class="ob-edificio" id="ob-edificio">—</div>
   </div>
-
   <div class="ob-steps">
     <div class="ob-step">
       <div class="ob-step-num">1</div>
@@ -192,7 +95,7 @@
       <div class="ob-step-num">2</div>
       <div class="ob-step-body">
         <div class="ob-step-title">Permitir el micrófono</div>
-        <div class="ob-step-desc">Si el navegador te lo pide, tocá <strong>Permitir</strong> también — lo necesitás para hablar cuando alguien llame.</div>
+        <div class="ob-step-desc">Si el navegador te lo pide, tocá <strong>Permitir</strong> — lo necesitás para hablar cuando alguien llame.</div>
       </div>
     </div>
     <div class="ob-step">
@@ -203,64 +106,46 @@
       </div>
     </div>
   </div>
-
-  <button class="ob-btn-notif" id="btn-activar" onclick="activarNotificaciones()">
-    🔔 Activar mi timbre
-  </button>
+  <button class="ob-btn-notif" id="btn-activar" onclick="activarNotificaciones()">🔔 Activar mi timbre</button>
   <div class="ob-status" id="ob-status"></div>
   <button class="ob-btn-listo" id="btn-listo" onclick="marcarListo()">Ya está, ir al timbre →</button>
-
   <div class="ob-ntfy-link">
     <div class="ob-ntfy-label">¿QUERÉS ACTIVARLO EN OTRO CELULAR TAMBIÉN?</div>
     <a class="ob-ntfy-btn" href="https://ntfy.sh/rn-rn061-d3-vetoq2?action=subscribe" target="_blank">Usar la app ntfy (avanzado)</a>
   </div>
-
   <div class="ob-footer">RINGNOW</div>
 </div>
 
-<!-- STANDBY -->
 <div id="pantalla-standby">
-  <div class="sb-icon">🔔</div>
-  <div class="sb-titulo">Portero Digital</div>
-  <div class="sb-depto">Depto <strong>3</strong></div>
-  <div class="sb-estado">
-    <div class="sb-dot"></div>
-    Timbre activo
+  <div style="font-size:48px;">🔔</div>
+  <div style="font-size:20px;font-weight:700;">Portero Digital</div>
+  <div style="font-size:14px;color:var(--suave);">Depto <strong>3</strong></div>
+  <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--verde);margin-top:4px;">
+    <div class="sb-dot"></div>Timbre activo
   </div>
-  <div class="sb-notif-status" id="sb-notif-status"></div>
-  <a class="sb-btn-ntfy" href="https://ntfy.sh/rn-rn061-d3-vetoq2?action=subscribe" target="_blank">
-    📲 Activar en otro celular (ntfy)
-  </a>
+  <div style="font-size:12px;color:#333;margin-top:8px;" id="sb-notif-status"></div>
+  <a class="sb-btn-ntfy" href="https://ntfy.sh/rn-rn061-d3-vetoq2?action=subscribe" target="_blank">📲 Activar en otro celular (ntfy)</a>
   <button class="sb-cambiar" onclick="resetOnboarding()">Reconfigurar</button>
   <div class="sb-footer">RINGNOW</div>
 </div>
 
-<!-- LLAMADA -->
 <div id="pantalla-llamada">
   <div class="ring-flash" id="ring-flash"></div>
   <video id="video-visitante" autoplay playsinline muted></video>
   <img id="preview-visitante" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:6;" />
   <audio id="audio-visitante" autoplay playsinline></audio>
-
   <div id="incoming-screen">
-    <div style="display:flex;flex-direction:column;align-items:center;gap:20px;width:100%;">
-      <div id="llamada-estado"></div>
-      <div id="btns-entrante" style="display:flex;gap:56px;align-items:center;">
-        <div style="display:flex;flex-direction:column;align-items:center;">
-          <button class="btn-acc btn-rojo" onclick="rechazar()" style="width:72px;height:72px;font-size:30px;border-radius:50%;border:none;cursor:pointer;background:#e74c3c;box-shadow:0 0 0 8px rgba(231,76,60,.15);display:flex;align-items:center;justify-content:center;">📵</button>
-          <span class="btn-label">Rechazar</span>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:center;">
-          <button class="btn-acc btn-verde" onclick="atender()" style="width:72px;height:72px;font-size:30px;border-radius:50%;border:none;cursor:pointer;background:#27ae60;box-shadow:0 0 0 8px rgba(39,174,96,.2);display:flex;align-items:center;justify-content:center;animation:pulsarVerde 1.5s infinite;">📞</button>
-          <span class="btn-label">Atender</span>
-        </div>
+    <div id="llamada-estado"></div>
+    <div id="btns-entrante">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <button class="btn-acc btn-rojo" onclick="rechazar()" style="width:72px;height:72px;font-size:30px;border-radius:50%;border:none;cursor:pointer;background:#e74c3c;box-shadow:0 0 0 8px rgba(231,76,60,.15);display:flex;align-items:center;justify-content:center;">📵</button>
+        <span class="btn-label">Rechazar</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <button class="btn-acc btn-verde" onclick="atender()" style="width:72px;height:72px;font-size:30px;border-radius:50%;border:none;cursor:pointer;background:#27ae60;box-shadow:0 0 0 8px rgba(39,174,96,.2);display:flex;align-items:center;justify-content:center;animation:pulsarVerde 1.5s infinite;">📞</button>
+        <span class="btn-label">Atender</span>
       </div>
     </div>
-  </div>
-
-  <div class="overlay-top" style="display:none;">
-    <div class="ot-label">Llamada desde la puerta</div>
-    <div class="ot-edificio" id="ot-edificio">—</div>
   </div>
   <div class="overlay-bottom">
     <button class="btn-acc btn-rojo" id="btn-colgar" style="display:none" onclick="colgar()">📵</button>
@@ -273,168 +158,142 @@
 <script>
 const DEPTO = 3;
 const CANAL = 'rn-rn061-d3-vetoq2';
-const LABEL = '3';
-if (RINGNOW_CONFIG) {{
-  if (document.getElementById('ot-edificio')) document.getElementById('ot-edificio').textContent = RINGNOW_CONFIG.edificio.nombre;
+
+if (RINGNOW_CONFIG) {
   if (document.getElementById('ob-edificio')) document.getElementById('ob-edificio').textContent = RINGNOW_CONFIG.edificio.nombre;
-}}
-</script>
+}
 
-<script>
-window.addEventListener('load', function() {{
-  function tryLoad(urls, idx, onSuccess, onFail) {{
-    if (idx >= urls.length) {{ onFail(); return; }}
-    var s = document.createElement('script');
-    s.src = urls[idx]; s.onload = onSuccess;
-    s.onerror = function() {{ tryLoad(urls, idx+1, onSuccess, onFail); }};
-    document.head.appendChild(s);
-  }}
-  tryLoad(['https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js'], 0, function() {{
-    tryLoad(['https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js'], 0, sdkListo, sdkError);
-  }}, sdkError);
-}});
-</script>
-
-<script>
-const ICE = {{ iceServers: [
-  {{ urls: 'stun:stun.l.google.com:19302' }},
-  {{ urls: 'stun:stun1.l.google.com:19302' }}
-]}};
+const ICE = { iceServers: [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' }
+]};
 
 let db, escRef, callRef, pc, micStream = null, ringInterval = null, audioCtx = null;
 const callIdParam = new URLSearchParams(window.location.search).get('callId');
 
-function d(id, tipo, txt) {{
+function d(id, tipo, txt) {
   const el = document.getElementById(id);
   if (!el) return;
   el.className = 'dl d-' + tipo;
   el.textContent = (tipo==='ok'?'✅':tipo==='err'?'❌':'⏳') + ' ' + txt;
-}}
-function ocultarDiag() {{
+}
+function ocultarDiag() {
   const b = document.getElementById('diag-box');
   b.style.transition = 'opacity .5s'; b.style.opacity = '0';
-  setTimeout(function(){{ b.style.display='none'; }}, 600);
-}}
+  setTimeout(function() { b.style.display='none'; }, 600);
+}
 
-function sdkError() {{ d('d1','err','Sin conexión'); }}
+try {
+  d('d1','ok','SDK cargado');
+  firebase.initializeApp(RINGNOW_CONFIG.firebase);
+  d('d2','ok','Firebase OK');
+  db = firebase.database();
+  db.ref('.info/connected').on('value', function(snap) {
+    if (snap.val()) { d('d3','ok','Conectado ✓'); arrancar(); }
+    else { d('d3','wai','Esperando conexión...'); }
+  });
+  setTimeout(function() { if (!document.getElementById('pantalla-onboarding').style.display || document.getElementById('pantalla-onboarding').style.display === 'none') { d('d3','ok','OK'); arrancar(); } }, 10000);
+} catch(e) {
+  d('d1','err','Error: ' + e.message);
+}
 
-function sdkListo() {{
-  d('d1','ok','SDK OK');
-  try {{ firebase.initializeApp(RINGNOW_CONFIG.firebase); d('d2','ok','Firebase OK'); }} catch(e) {{ d('d2','err',e.message); return; }}
-  try {{ db = firebase.database(); }} catch(e) {{ d('d3','err',e.message); return; }}
-  db.ref('.info/connected').on('value', function(snap) {{
-    if (snap.val()) {{ d('d3','ok','Conectado ✓'); arrancar(); }}
-  }});
-  setTimeout(function() {{ if (db) {{ d('d3','ok','OK'); arrancar(); }} }}, 8000);
-}}
-
-function arrancar() {{
-  // Registrar canal en Firebase
-  db.ref('canales/depto' + DEPTO).set({{ canal: CANAL }});
-
-  // Pedir permiso de micrófono silenciosamente
-  navigator.mediaDevices.getUserMedia({{ audio: true, video: false }})
-    .then(function(s) {{ s.getTracks().forEach(function(t){{ t.stop(); }}); }})
-    .catch(function(){{}});
-
+function arrancar() {
+  db.ref('canales/depto' + DEPTO).set({ canal: CANAL });
+  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+    .then(function(s) { s.getTracks().forEach(function(t) { t.stop(); }); })
+    .catch(function() {});
   ocultarDiag();
 
-  if (callIdParam) {{
+  if (callIdParam) {
     escuchar();
     var cref = db.ref('calls/' + callIdParam);
-    cref.once('value').then(function(snap) {{
+    cref.once('value').then(function(snap) {
       var call = snap.val();
       if (!call || call.status !== 'ringing') return;
       if (Date.now() - (call.timestamp || 0) > 120000) return;
       callRef = cref;
       mostrarLlamadaEntrante();
-    }});
+    });
     return;
-  }}
+  }
 
   const listo = localStorage.getItem('rn_listo_' + DEPTO);
-  if (!listo) {{
+  if (!listo) {
     document.getElementById('pantalla-onboarding').style.display = 'flex';
-    // Verificar si ya tiene permiso
-    if ('Notification' in window && Notification.permission === 'granted') {{
+    if ('Notification' in window && Notification.permission === 'granted') {
       setStatus('ok', '✅ Notificaciones ya activadas');
       document.getElementById('btn-activar').textContent = '✅ Notificaciones activas';
       document.getElementById('btn-activar').disabled = true;
       document.getElementById('btn-listo').classList.add('visible');
       registrarSW();
-    }}
-  }} else {{
+    }
+  } else {
     document.getElementById('pantalla-standby').style.display = 'flex';
     mostrarEstadoNotif();
-  }}
+  }
   escuchar();
-}}
+}
 
-async function activarNotificaciones() {{
-  const btn = document.getElementById('btn-activar');
-  btn.disabled = true;
-  btn.textContent = 'Activando...';
-
-  if (!('Notification' in window)) {{
-    setStatus('err', 'Tu navegador no soporta notificaciones. Probá con Chrome.');
-    btn.textContent = '🔔 Activar mi timbre';
-    btn.disabled = false;
+function activarNotificaciones() {
+  if (!('Notification' in window)) {
+    setStatus('err', 'Usá Chrome para activar las notificaciones.');
     return;
-  }}
-
-  if (Notification.permission === 'denied') {{
-    setStatus('err', 'Bloqueaste las notificaciones. Andá a Configuración del navegador → Notificaciones → Permitir para este sitio.');
-    btn.textContent = '🔔 Activar mi timbre';
-    btn.disabled = false;
+  }
+  if (Notification.permission === 'denied') {
+    setStatus('err', 'Notificaciones bloqueadas. Andá a Ajustes del sitio en Chrome → Permitir notificaciones.');
     return;
-  }}
-
-  try {{
-    const perm = await Notification.requestPermission();
-    if (perm === 'granted') {{
-      await registrarSW();
-      btn.textContent = '✅ Notificaciones activas';
+  }
+  if (Notification.permission === 'granted') {
+    registrarSW().then(function() {
+      document.getElementById('btn-activar').textContent = '✅ Ya activo';
+      document.getElementById('btn-activar').disabled = true;
       setStatus('ok', '¡Listo! Ya vas a recibir las llamadas.');
       document.getElementById('btn-listo').classList.add('visible');
-    }} else {{
-      setStatus('err', 'No diste permiso. Necesitás tocar "Permitir" para recibir las llamadas.');
-      btn.textContent = '🔔 Intentar de nuevo';
-      btn.disabled = false;
-    }}
-  }} catch(e) {{
-    setStatus('err', 'Ocurrió un error. Intentá de nuevo.');
-    btn.textContent = '🔔 Activar mi timbre';
-    btn.disabled = false;
-  }}
-}}
+    });
+    return;
+  }
+  Notification.requestPermission().then(function(perm) {
+    if (perm === 'granted') {
+      registrarSW().then(function() {
+        document.getElementById('btn-activar').textContent = '✅ Notificaciones activas';
+        document.getElementById('btn-activar').disabled = true;
+        setStatus('ok', '¡Listo! Ya vas a recibir las llamadas.');
+        document.getElementById('btn-listo').classList.add('visible');
+      });
+    } else {
+      setStatus('err', 'Tocaste "No permitir". Para activarlo: en Chrome tocá el candado de la URL → Notificaciones → Permitir.');
+      document.getElementById('btn-activar').textContent = '🔔 Intentar de nuevo';
+    }
+  }).catch(function(e) {
+    setStatus('err', 'Error: ' + e.message);
+  });
+}
 
-function setStatus(tipo, msg) {{
+function setStatus(tipo, msg) {
   const el = document.getElementById('ob-status');
   el.textContent = msg;
   el.className = 'ob-status' + (tipo ? ' ' + tipo : '');
-}}
+}
 
-function marcarListo() {{
+function marcarListo() {
   localStorage.setItem('rn_listo_' + DEPTO, '1');
   document.getElementById('pantalla-onboarding').style.display = 'none';
   document.getElementById('pantalla-standby').style.display = 'flex';
   mostrarEstadoNotif();
-}}
+}
 
-function mostrarEstadoNotif() {{
+function mostrarEstadoNotif() {
   const el = document.getElementById('sb-notif-status');
   if (!el) return;
-  if ('Notification' in window && Notification.permission === 'granted') {{
-    el.textContent = '✅ Notificaciones activas';
-    el.style.color = '#27ae60';
+  if ('Notification' in window && Notification.permission === 'granted') {
+    el.textContent = '✅ Notificaciones activas'; el.style.color = '#27ae60';
     registrarSW();
-  }} else {{
-    el.textContent = '⚠️ Notificaciones no activadas';
-    el.style.color = '#666';
-  }}
-}}
+  } else {
+    el.textContent = '⚠️ Notificaciones no activadas'; el.style.color = '#666';
+  }
+}
 
-function resetOnboarding() {{
+function resetOnboarding() {
   localStorage.removeItem('rn_listo_' + DEPTO);
   document.getElementById('pantalla-standby').style.display = 'none';
   document.getElementById('btn-activar').disabled = false;
@@ -443,53 +302,47 @@ function resetOnboarding() {{
   document.getElementById('ob-status').className = 'ob-status';
   document.getElementById('btn-listo').classList.remove('visible');
   document.getElementById('pantalla-onboarding').style.display = 'flex';
-  if ('Notification' in window && Notification.permission === 'granted') {{
+  if ('Notification' in window && Notification.permission === 'granted') {
     setStatus('ok', '✅ Notificaciones ya activadas');
     document.getElementById('btn-activar').textContent = '✅ Notificaciones activas';
     document.getElementById('btn-activar').disabled = true;
     document.getElementById('btn-listo').classList.add('visible');
-  }}
-}}
+  }
+}
 
-function registrarSW() {{
-  return new Promise(function(resolve) {{
-    if (!('serviceWorker' in navigator)) {{ resolve(); return; }}
+function registrarSW() {
+  return new Promise(function(resolve) {
+    if (!('serviceWorker' in navigator)) { resolve(); return; }
     const base = RINGNOW_CONFIG.baseURL.replace('https://ring-now.github.io', '');
-    navigator.serviceWorker.register(base + '/sw.js', {{ scope: base + '/' }})
-      .then(function(reg) {{
-        function send(w) {{
-          w.postMessage({{
-            type:'WATCH_DEPTO', depto: String(DEPTO),
-            firebaseDB: RINGNOW_CONFIG.firebase.databaseURL,
-            baseURL: RINGNOW_CONFIG.baseURL
-          }});
-        }}
+    navigator.serviceWorker.register(base + '/sw.js', { scope: base + '/' })
+      .then(function(reg) {
+        function send(w) {
+          w.postMessage({ type:'WATCH_DEPTO', depto: String(DEPTO), firebaseDB: RINGNOW_CONFIG.firebase.databaseURL, baseURL: RINGNOW_CONFIG.baseURL });
+        }
         if (reg.active) send(reg.active);
-        if (reg.installing) reg.installing.addEventListener('statechange', function() {{
-          if (this.state==='activated') send(this);
-        }});
-        navigator.serviceWorker.ready.then(function(r) {{ if (r.active) send(r.active); resolve(); }});
-      }}).catch(function(){{ resolve(); }});
-  }});
-}}
+        if (reg.installing) reg.installing.addEventListener('statechange', function() { if (this.state==='activated') send(this); });
+        navigator.serviceWorker.ready.then(function(r) { if (r.active) send(r.active); resolve(); });
+      }).catch(function() { resolve(); });
+  });
+}
 
-function escuchar() {{
+function escuchar() {
   if (escRef) escRef.off();
   escRef = db.ref('calls').orderByChild('deptoId').equalTo(String(DEPTO));
   escRef.on('child_added', procesarLlamada);
   escRef.on('child_changed', procesarLlamada);
-}}
+}
 
-function procesarLlamada(snap) {{
+function procesarLlamada(snap) {
   const call = snap.val();
   if (!call || call.status !== 'ringing') return;
   if (Date.now() - (call.timestamp || 0) > 90000) return;
   if (callRef) return;
   callRef = db.ref('calls/' + snap.key);
   mostrarLlamadaEntrante();
-}}
+}
 
-function mostrarLlamadaEntrante() {{
+function mostrarLlamadaEntrante() {
   document.getElementById('pantalla-onboarding').style.display = 'none';
   document.getElementById('pantalla-standby').style.display = 'none';
   const pl = document.getElementById('pantalla-llamada');
@@ -499,41 +352,34 @@ function mostrarLlamadaEntrante() {{
   document.getElementById('ring-flash').style.display = 'block';
   document.getElementById('llamada-estado').textContent = '';
   document.getElementById('incoming-screen').style.display = 'flex';
-
-  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {{
-    navigator.serviceWorker.ready.then(function(reg) {{
-      reg.getNotifications().then(function(notifs) {{ notifs.forEach(function(n) {{ n.close(); }}); }});
-    }});
-  }}
-
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.ready.then(function(reg) {
+      reg.getNotifications().then(function(notifs) { notifs.forEach(function(n) { n.close(); }); });
+    });
+  }
   iniciarRing();
-
-  callRef.child('preview').on('value', function(snap) {{
-    if (snap.val()) {{
+  callRef.child('preview').on('value', function(snap) {
+    if (snap.val()) {
       var img = document.getElementById('preview-visitante');
       img.src = snap.val(); img.style.display = 'block';
       document.getElementById('pantalla-llamada').style.background = 'transparent';
-    }}
-  }});
-
-  callRef.child('status').on('value', function(snap) {{
-    if (snap.val() === 'ended' || snap.val() === 'rejected') {{
+    }
+  });
+  callRef.child('status').on('value', function(snap) {
+    if (snap.val() === 'ended' || snap.val() === 'rejected') {
       if (!callRef) return;
       detenerRing();
-      if (pc) {{ pc.close(); pc = null; }}
-      if (micStream) {{ micStream.getTracks().forEach(function(t){{ t.stop(); }}); micStream = null; }}
+      if (pc) { pc.close(); pc = null; }
+      if (micStream) { micStream.getTracks().forEach(function(t) { t.stop(); }); micStream = null; }
       callRef.off(); callRef = null;
       document.getElementById('pantalla-llamada').style.display = 'none';
       callIdParam ? window.location.href = RINGNOW_CONFIG.baseURL + '/fin.html' : volverStandby();
-    }}
-  }});
+    }
+  });
+  setTimeout(function() { if (document.getElementById('btns-entrante').style.display !== 'none') rechazar(); }, 40000);
+}
 
-  setTimeout(function() {{
-    if (document.getElementById('btns-entrante').style.display !== 'none') rechazar();
-  }}, 40000);
-}}
-
-async function atender() {{
+async function atender() {
   detenerRing();
   document.getElementById('btns-entrante').style.display = 'none';
   document.getElementById('btn-colgar').style.display = 'flex';
@@ -543,108 +389,89 @@ async function atender() {{
   img.style.display = 'none'; img.src = '';
   document.getElementById('pantalla-llamada').style.background = '';
   if (callRef) callRef.child('preview').off();
-  if (audioCtx) {{ try {{ audioCtx.close(); }} catch(e) {{}} audioCtx = null; }}
-
-  try {{
+  if (audioCtx) { try { audioCtx.close(); } catch(e) {} audioCtx = null; }
+  try {
     document.getElementById('llamada-estado').textContent = 'Obteniendo micrófono...';
-    micStream = await navigator.mediaDevices.getUserMedia({{ audio: true, video: false }});
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
     document.getElementById('llamada-estado').textContent = 'Creando conexión...';
     pc = new RTCPeerConnection(ICE);
-    micStream.getTracks().forEach(function(t) {{ pc.addTrack(t, micStream); }});
-
-    pc.ontrack = function(e) {{
-      if (e.track.kind === 'audio') {{
+    micStream.getTracks().forEach(function(t) { pc.addTrack(t, micStream); });
+    pc.ontrack = function(e) {
+      if (e.track.kind === 'audio') {
         const audio = document.getElementById('audio-visitante');
         if (!audio.srcObject) audio.srcObject = new MediaStream();
         audio.srcObject.addTrack(e.track);
-        audio.play().catch(function(){{}});
-      }}
+        audio.play().catch(function() {});
+      }
       document.getElementById('llamada-estado').textContent = '';
-    }};
-
-    pc.onicecandidate = function(e) {{
-      if (e.candidate) callRef.child('residentCandidates').push(e.candidate.toJSON());
-    }};
-
-    pc.oniceconnectionstatechange = function() {{
+    };
+    pc.onicecandidate = function(e) { if (e.candidate) callRef.child('residentCandidates').push(e.candidate.toJSON()); };
+    pc.oniceconnectionstatechange = function() {
       const s = pc.iceConnectionState;
       document.getElementById('llamada-estado').textContent = s === 'connected' || s === 'completed' ? '' : 'ICE: ' + s;
-      if (s === 'failed') {{ if (pc && pc.restartIce) pc.restartIce(); else colgar(); }}
-    }};
-
+      if (s === 'failed') { if (pc && pc.restartIce) pc.restartIce(); else colgar(); }
+    };
     document.getElementById('llamada-estado').textContent = 'Leyendo oferta...';
     const snap = await callRef.once('value');
     const data = snap.val();
     if (!data || !data.offer) throw new Error('Sin oferta');
-
     await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
-
-    if (data.visitorCandidates) {{
-      for (const k in data.visitorCandidates) {{
-        try {{ await pc.addIceCandidate(new RTCIceCandidate(data.visitorCandidates[k])); }} catch(e) {{}}
-      }}
-    }}
-
-    callRef.child('visitorCandidates').on('child_added', async function(s) {{
-      if (s.val() && pc) try {{ await pc.addIceCandidate(new RTCIceCandidate(s.val())); }} catch(e) {{}}
-    }});
-
+    if (data.visitorCandidates) {
+      for (const k in data.visitorCandidates) {
+        try { await pc.addIceCandidate(new RTCIceCandidate(data.visitorCandidates[k])); } catch(e) {}
+      }
+    }
+    callRef.child('visitorCandidates').on('child_added', async function(s) {
+      if (s.val() && pc) try { await pc.addIceCandidate(new RTCIceCandidate(s.val())); } catch(e) {}
+    });
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
-    await callRef.update({{ answer: {{ type: answer.type, sdp: answer.sdp }}, status: 'active' }});
+    await callRef.update({ answer: { type: answer.type, sdp: answer.sdp }, status: 'active' });
     document.getElementById('llamada-estado').textContent = 'Conectando...';
-
-  }} catch(err) {{
+  } catch(err) {
     document.getElementById('llamada-estado').textContent = 'Error: ' + err.message;
-    setTimeout(function() {{ colgar(); }}, 3000);
-  }}
-}}
+    setTimeout(function() { colgar(); }, 3000);
+  }
+}
 
-async function rechazar() {{
+async function rechazar() {
   detenerRing();
-  if (callRef) {{ await callRef.update({{ status: 'rejected' }}).catch(function(){{}}); callRef.off(); callRef = null; }}
+  if (callRef) { await callRef.update({ status: 'rejected' }).catch(function() {}); callRef.off(); callRef = null; }
   volverStandby();
-}}
+}
 
-async function colgar() {{
+async function colgar() {
   detenerRing();
-  if (pc) {{ pc.close(); pc = null; }}
-  if (micStream) {{ micStream.getTracks().forEach(function(t){{ t.stop(); }}); micStream = null; }}
-  if (callRef) {{ await callRef.update({{ status: 'ended' }}).catch(function(){{}}); callRef.off(); callRef = null; }}
+  if (pc) { pc.close(); pc = null; }
+  if (micStream) { micStream.getTracks().forEach(function(t) { t.stop(); }); micStream = null; }
+  if (callRef) { await callRef.update({ status: 'ended' }).catch(function() {}); callRef.off(); callRef = null; }
   document.getElementById('pantalla-llamada').style.background = '';
   document.getElementById('pantalla-llamada').style.display = 'none';
   callIdParam ? window.location.href = RINGNOW_CONFIG.baseURL + '/fin.html' : volverStandby();
-}}
+}
 
-function volverStandby() {{
+function volverStandby() {
   document.getElementById('pantalla-llamada').style.display = 'none';
   document.getElementById('pantalla-standby').style.display = 'flex';
   escuchar();
-}}
+}
 
-function ring() {{
-  try {{
+function ring() {
+  try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    [[880,0],[1100,0.15]].forEach(function(par) {{
+    [[880,0],[1100,0.15]].forEach(function(par) {
       const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
       osc.connect(gain); gain.connect(audioCtx.destination);
       osc.frequency.value = par[0]; osc.type = 'sine';
       const t = audioCtx.currentTime + par[1];
-      gain.gain.setValueAtTime(0,t);
-      gain.gain.linearRampToValueAtTime(0.18,t+0.05);
-      gain.gain.linearRampToValueAtTime(0,t+0.28);
+      gain.gain.setValueAtTime(0,t); gain.gain.linearRampToValueAtTime(0.18,t+0.05); gain.gain.linearRampToValueAtTime(0,t+0.28);
       osc.start(t); osc.stop(t+0.3);
-    }});
-  }} catch(e) {{}}
-}}
-function iniciarRing() {{ detenerRing(); audioCtx = new (window.AudioContext||window.webkitAudioContext)(); ring(); ringInterval = setInterval(ring,1600); }}
-function detenerRing() {{ if (ringInterval) {{ clearInterval(ringInterval); ringInterval=null; }} if (audioCtx) {{ try{{audioCtx.close();}}catch(e){{}} audioCtx=null; }} }}
-
-function toast(msg) {{
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('visible');
-  setTimeout(function(){{ t.classList.remove('visible'); }}, 3000);
-}}
+    });
+  } catch(e) {}
+}
+function iniciarRing() { detenerRing(); audioCtx = new (window.AudioContext||window.webkitAudioContext)(); ring(); ringInterval = setInterval(ring,1600); }
+function detenerRing() { if (ringInterval) { clearInterval(ringInterval); ringInterval=null; } if (audioCtx) { try{audioCtx.close();}catch(e){} audioCtx=null; } }
+function toast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('visible'); setTimeout(function(){t.classList.remove('visible');},3000); }
 </script>
 </body>
 </html>
