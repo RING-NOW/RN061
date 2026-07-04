@@ -1,29 +1,32 @@
-// Service Worker — RINGNOW Portero Digital v3
-// Lee la config del edificio desde Cache API
+// Service Worker — RINGNOW Portero Digital v4
 let watchInterval = null;
 let lastCallId = null;
 let myDepto = null;
 let firebaseDB = null;
 let baseURL = null;
+
 self.addEventListener('install', function(e) { self.skipWaiting(); });
 self.addEventListener('activate', function(e) {
   e.waitUntil(clients.claim().then(function() { return arrancar(); }));
 });
-// Recibir depto y config desde la página
+
 self.addEventListener('message', function(event) {
   if (event.data && event.data.type === 'WATCH_DEPTO') {
     myDepto = event.data.depto;
-    guardarConfig({ depto: myDepto, firebaseDB: event.data.firebaseDB, baseURL: event.data.baseURL });
+    firebaseDB = event.data.firebaseDB;
+    baseURL = event.data.baseURL;
+    guardarConfig({ depto: myDepto, firebaseDB: firebaseDB, baseURL: baseURL });
     iniciarPolling();
   }
 });
+
 function guardarConfig(cfg) {
-  return caches.open('ringnow-v3').then(function(cache) {
+  return caches.open('ringnow-v4').then(function(cache) {
     return cache.put('/portero-config', new Response(JSON.stringify(cfg)));
   });
 }
 function leerConfig() {
-  return caches.open('ringnow-v3').then(function(cache) {
+  return caches.open('ringnow-v4').then(function(cache) {
     return cache.match('/portero-config').then(function(resp) {
       if (resp) return resp.json();
       return null;
@@ -33,9 +36,7 @@ function leerConfig() {
 function arrancar() {
   return leerConfig().then(function(cfg) {
     if (cfg && cfg.depto) {
-      myDepto = cfg.depto;
-      firebaseDB = cfg.firebaseDB;
-      baseURL = cfg.baseURL;
+      myDepto = cfg.depto; firebaseDB = cfg.firebaseDB; baseURL = cfg.baseURL;
       iniciarPolling();
     }
   });
@@ -44,7 +45,7 @@ function iniciarPolling() {
   if (watchInterval) clearInterval(watchInterval);
   if (!myDepto || !firebaseDB) return;
   checkForCalls();
-  watchInterval = setInterval(checkForCalls, 2000);
+  watchInterval = setInterval(checkForCalls, 3000);
 }
 function checkForCalls() {
   if (!myDepto || !firebaseDB) {
@@ -71,9 +72,10 @@ function checkForCalls() {
     .catch(function() {});
 }
 function mostrarNotificacion(depto, callId) {
-  var url = (baseURL || '') + '/timbre-residente.html?depto=' + depto + '&callId=' + callId;
+  // URL apunta al archivo rN.html correcto
+  var url = (baseURL || '') + '/r' + depto + '.html?callId=' + callId;
   self.registration.showNotification('Llamada — Depto ' + depto, {
-    body: 'Tocaron el timbre',
+    body: 'Tocaron el timbre en ' + (baseURL || '').split('/').pop(),
     vibrate: [300, 100, 300, 100, 300],
     requireInteraction: true,
     tag: 'llamada',
@@ -88,12 +90,10 @@ function mostrarNotificacion(depto, callId) {
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
   var data = event.notification.data || {};
-  var depto = data.depto;
-  var callId = data.callId;
   var url = data.url;
   if (event.action === 'rechazar') {
-    if (firebaseDB && callId) {
-      fetch(firebaseDB + '/calls/' + callId + '/status.json', {
+    if (firebaseDB && data.callId) {
+      fetch(firebaseDB + '/calls/' + data.callId + '/status.json', {
         method: 'PUT', body: JSON.stringify('rejected')
       }).catch(function() {});
     }
@@ -102,7 +102,7 @@ self.addEventListener('notificationclick', function(event) {
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(list) {
       for (var i = 0; i < list.length; i++) {
-        if (list[i].url.includes('timbre-residente') && 'focus' in list[i]) {
+        if (list[i].url.includes('/r' + data.depto + '.html') && 'focus' in list[i]) {
           return list[i].focus();
         }
       }
