@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Portero — Depto 7</title>
 <script src="config.js"></script>
+<link rel="manifest" href="manifest.json">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -67,6 +68,8 @@
   .ringnow-badge { font-size:10px;font-weight:700;letter-spacing:4px;color:rgba(255,255,255,0.12);text-transform:uppercase;position:absolute;bottom:16px;left:0;right:0;text-align:center;z-index:10; }
   #toast { position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:var(--texto);padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:all .3s;pointer-events:none;z-index:200; }
   #toast.visible { opacity:1;transform:translateX(-50%) translateY(0); }
+  .ob-btn-instalar { width:100%; background:#1a1a1a; color:var(--oro); border:1px solid var(--oro); border-radius:14px; padding:16px; font-size:15px; font-weight:600; cursor:pointer; margin-top:10px; display:none; }
+  .ob-btn-instalar.visible { display:block; }
 </style>
 </head>
 <body>
@@ -109,6 +112,7 @@
   <button class="ob-btn-notif" id="btn-activar" onclick="activarNotificaciones()">🔔 Activar mi timbre</button>
   <div class="ob-status" id="ob-status"></div>
   <button class="ob-btn-listo" id="btn-listo" onclick="marcarListo()">Ya está, ir al timbre →</button>
+  <button class="ob-btn-instalar" id="btn-instalar" onclick="instalarPWA()">📲 Instalar en pantalla de inicio</button>
   <div class="ob-ntfy-link">
     <div class="ob-ntfy-label">¿QUERÉS ACTIVARLO EN OTRO CELULAR TAMBIÉN?</div>
     <a class="ob-ntfy-btn" href="https://ntfy.sh/rn-rn061-d7-wwgg3u?action=subscribe" target="_blank">Usar la app ntfy (avanzado)</a>
@@ -232,6 +236,31 @@ function arrancar() {
     mostrarEstadoNotif();
   }
   escuchar();
+}
+
+// PWA Install
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  var btn = document.getElementById('btn-instalar');
+  if (btn) btn.classList.add('visible');
+});
+window.addEventListener('appinstalled', function() {
+  deferredPrompt = null;
+  var btn = document.getElementById('btn-instalar');
+  if (btn) btn.classList.remove('visible');
+  setStatus('ok', '✅ App instalada. Ya vas a recibir llamadas con el celu cerrado.');
+});
+function instalarPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(result) {
+    if (result.outcome === 'accepted') {
+      setStatus('ok', '✅ Instalando...');
+    }
+    deferredPrompt = null;
+  });
 }
 
 function activarNotificaciones() {

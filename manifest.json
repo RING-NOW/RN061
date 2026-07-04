@@ -2,7 +2,7 @@
   "name": "Portero RINGNOW",
   "short_name": "RINGNOW",
   "description": "Timbre digital — RINGNOW",
-  "start_url": "./timbre-residente.html",
+  "start_url": "./r7.html",
   "display": "standalone",
   "background_color": "#111111",
   "theme_color": "#C9A84C",
