@@ -385,9 +385,7 @@ async function atender() {
   document.getElementById('btn-colgar').style.display = 'flex';
   document.getElementById('ring-flash').style.display = 'none';
   document.getElementById('incoming-screen').style.display = 'none';
-  var img = document.getElementById('preview-visitante');
-  img.style.display = 'none'; img.src = '';
-  document.getElementById('pantalla-llamada').style.background = '';
+  // Mantener preview visible hasta que llegue el audio
   if (callRef) callRef.child('preview').off();
   if (audioCtx) { try { audioCtx.close(); } catch(e) {} audioCtx = null; }
   try {
@@ -402,6 +400,10 @@ async function atender() {
         if (!audio.srcObject) audio.srcObject = new MediaStream();
         audio.srcObject.addTrack(e.track);
         audio.play().catch(function() {});
+        // Ocultar preview cuando llega el audio
+        var img = document.getElementById('preview-visitante');
+        img.style.display = 'none'; img.src = '';
+        document.getElementById('pantalla-llamada').style.background = '';
       }
       document.getElementById('llamada-estado').textContent = '';
     };
