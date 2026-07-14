@@ -90,32 +90,31 @@
     <div class="ob-step">
       <div class="ob-step-num">1</div>
       <div class="ob-step-body">
-        <div class="ob-step-title">Activá las notificaciones</div>
-        <div class="ob-step-desc">Tocá el botón de abajo. El celular te va a preguntar si querés recibir notificaciones — tocá <strong>Permitir</strong>.</div>
+        <div class="ob-step-title">Instalá la app ntfy</div>
+        <div class="ob-step-desc">Es gratis y no necesitás crear una cuenta. Tocá el botón de abajo para instalarla.</div>
       </div>
     </div>
     <div class="ob-step">
       <div class="ob-step-num">2</div>
       <div class="ob-step-body">
-        <div class="ob-step-title">Permitir el micrófono</div>
-        <div class="ob-step-desc">Si el navegador te lo pide, tocá <strong>Permitir</strong> — lo necesitás para hablar cuando alguien llame.</div>
+        <div class="ob-step-title">Suscribite a tu timbre</div>
+        <div class="ob-step-desc">Al abrir ntfy, tocá <strong>Use without account</strong> (o "Continuar sin cuenta"). Después tocá <strong>Subscribe</strong> y listo.</div>
       </div>
     </div>
     <div class="ob-step">
       <div class="ob-step-num">3</div>
       <div class="ob-step-body">
-        <div class="ob-step-title">Listo — cerrá esta página</div>
-        <div class="ob-step-desc">No hace falta dejarla abierta. Cuando alguien toque tu timbre, te llega la notificación directamente.</div>
+        <div class="ob-step-title">Permitir el micrófono</div>
+        <div class="ob-step-desc">Tocá el botón "Listo" de abajo y aceptá el permiso de micrófono — lo necesitás para hablar cuando alguien llame.</div>
       </div>
     </div>
   </div>
-  <button class="ob-btn-notif" id="btn-activar" onclick="activarNotificaciones()">🔔 Activar mi timbre</button>
+  <a class="ob-btn-notif" href="https://ntfy.sh/rn-rn061-d7-wwgg3u" target="_blank" onclick="setTimeout(function(){document.getElementById('btn-listo').classList.add('visible');}, 3000)">🔔 Activar mi timbre en ntfy</a>
   <div class="ob-status" id="ob-status"></div>
-  <button class="ob-btn-listo" id="btn-listo" onclick="marcarListo()">Ya está, ir al timbre →</button>
-  <button class="ob-btn-instalar" id="btn-instalar" onclick="instalarPWA()">📲 Instalar en pantalla de inicio</button>
+  <button class="ob-btn-listo" id="btn-listo" onclick="marcarListo()">✅ Listo, ya lo activé →</button>
   <div class="ob-ntfy-link">
-    <div class="ob-ntfy-label">¿QUERÉS ACTIVARLO EN OTRO CELULAR TAMBIÉN?</div>
-    <a class="ob-ntfy-btn" href="https://ntfy.sh/rn-rn061-d7-wwgg3u?action=subscribe" target="_blank">Usar la app ntfy (avanzado)</a>
+    <div class="ob-ntfy-label">TAMBIÉN PODÉS ACTIVAR LAS NOTIFICACIONES DEL NAVEGADOR</div>
+    <button class="ob-ntfy-btn" onclick="activarNotificaciones()">Activar notificaciones del navegador</button>
   </div>
   <div class="ob-footer">RINGNOW</div>
 </div>
