@@ -413,9 +413,12 @@ async function atender() {
   document.getElementById('btn-colgar').style.display = 'flex';
   document.getElementById('ring-flash').style.display = 'none';
   document.getElementById('incoming-screen').style.display = 'none';
-  // Mantener preview visible hasta que llegue el audio
+  // Mantener preview visible - NO restaurar fondo hasta que llegue el audio
   if (callRef) callRef.child('preview').off();
   if (audioCtx) { try { audioCtx.close(); } catch(e) {} audioCtx = null; }
+  // Aseguramos que el preview siga visible
+  var imgPreview = document.getElementById('preview-visitante');
+  if (imgPreview.src) imgPreview.style.display = 'block';
   try {
     document.getElementById('llamada-estado').textContent = 'Obteniendo micrófono...';
     micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
