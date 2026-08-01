@@ -36,15 +36,15 @@ const RINGNOW_CONFIG = {
     12: "rn-rn061-d12-704yhs",
   },
 
-  /* ── Firebase ── */
+  /* ── Firebase (proyecto RN061 — cuenta RINGNOW) ── */
   firebase: {
-    apiKey:            "AIzaSyDO3kfFwTMD2ICyJV5_YgMFUx98_sOVl0g",
-    authDomain:        "rn063-ab4ec.firebaseapp.com",
-    databaseURL:       "https://rn063-ab4ec-default-rtdb.firebaseio.com",
-    projectId:         "rn063-ab4ec",
-    storageBucket:     "rn063-ab4ec.firebasestorage.app",
-    messagingSenderId: "3354332296",
-    appId:             "1:3354332296:web:ef209dd369039d1866633d"
+    apiKey:            "AIzaSyCkOPiJXMObs5QbTT2qbPXcThUSN7ys7PE",
+    authDomain:        "rn061-ddc94.firebaseapp.com",
+    databaseURL:       "https://rn061-ddc94-default-rtdb.firebaseio.com",
+    projectId:         "rn061-ddc94",
+    storageBucket:     "rn061-ddc94.firebasestorage.app",
+    messagingSenderId: "352964679257",
+    appId:             "1:352964679257:web:48c5d43eaee45db2ba4348"
   },
 
 };
