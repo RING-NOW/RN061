@@ -341,7 +341,7 @@ async function atender() {
   document.getElementById('ring-flash').style.display = 'none';
   document.getElementById('incoming-screen').style.display = 'none';
   // Preview sigue visible (z-index:8, encima del fondo pero debajo de overlay)
-  if (callRef) callRef.child('preview').off();
+  // Preview sigue actualizando durante la llamada
   if (audioCtx) { try { audioCtx.close(); } catch(e) {} audioCtx = null; }
   try {
     document.getElementById('llamada-estado').textContent = 'Obteniendo micrófono...';
