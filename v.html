@@ -216,12 +216,18 @@ async function iniciarLlamada(n) {
       const videoEl = document.getElementById('video-yo');
       const ctx = canvas.getContext('2d');
       const fotoInterval = setInterval(function() {
-        if (!localStream) { clearInterval(fotoInterval); return; }
         try {
-          canvas.width = videoEl.videoWidth || 320;
-          canvas.height = videoEl.videoHeight || 240;
-          ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
-          if (callRef) callRef.update({ preview: canvas.toDataURL('image/jpeg', 0.5) });
+          var w = videoEl.videoWidth || 320;
+          var h = videoEl.videoHeight || 240;
+          if (w > 0 && h > 0) {
+            canvas.width = w; canvas.height = h;
+            ctx.drawImage(videoEl, 0, 0, w, h);
+          }
+          // Mandar siempre la ultima foto disponible aunque el stream se pause
+          var dataUrl = canvas.toDataURL('image/jpeg', 0.5);
+          if (dataUrl && dataUrl.length > 100 && callRef) {
+            callRef.update({ preview: dataUrl });
+          }
         } catch(e) {}
       }, 2000);
       window._fotoInterval = fotoInterval;
